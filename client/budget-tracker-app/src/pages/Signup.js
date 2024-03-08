@@ -1,8 +1,16 @@
-import React from "react";
+import { React, useEffect } from "react";
 import { Button, Form, Grid, Input, theme, Typography, message } from "antd";
-import { LockOutlined, MailOutlined, UserAddOutlined, LockFilled } from "@ant-design/icons";
+import {
+  LockOutlined,
+  MailOutlined,
+  UserAddOutlined,
+  LockFilled,
+  GoogleOutlined,
+} from "@ant-design/icons";
+import { GoogleLogin } from "react-google-login";
 import logo from "../images/logo.png";
-import axios from 'axios';
+import axios from "axios";
+import auth from "../components/auth";
 import backgroundImage from "../images/background.png";
 
 const { useToken } = theme;
@@ -14,21 +22,52 @@ function Signup() {
   const screens = useBreakpoint();
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    auth();
+  }, []);
+
+  const responseGoogleSuccess = async (response) => {
+    console.log(response.wt.Ad); //name
+    console.log(response.wt.NT); //id
+    console.log(response.wt.cu); //email
+    const values = {
+      username: response.wt.Ad,
+      email: response.wt.cu,
+      password: response.wt.NT,
+    };
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/user/oauth/register",
+        values
+      );
+      console.log(response.data);
+      message.success("Signup Success!");
+      form.resetFields();
+    } catch (error) {
+      message.error(error);
+    }
+  };
+  const responseGoogleFailure = (response) => {
+    console.log(response);
+  };
+
   const onFinish = async (values) => {
     console.log("Received values of form: ", values);
-    if (values.confirmPassword!==values.password)
-    {
-        message.error("Password and Confirm Password don't match!")
-        form.resetFields()
-        return
+    if (values.confirmPassword !== values.password) {
+      message.error("Password and Confirm Password don't match!");
+      form.resetFields();
+      return;
     }
     const { confirmPassword, ...data } = values;
     try {
-        const response = await axios.post("http://localhost:3001/user/signup",data)
-        console.log(response.data)
-        message.success('Signup Success!')
+      const response = await axios.post(
+        "http://localhost:3001/user/signup",
+        data
+      );
+      console.log(response.data);
+      message.success("Signup Success!");
     } catch (error) {
-        message.error(error)
+      message.error(error);
     }
   };
 
@@ -36,8 +75,6 @@ function Signup() {
     section: {
       display: "flex",
       minHeight: "100vh",
-      backgroundImage:
-        "linear-gradient(45deg, hsl(240, 46%, 95%) 0%, hsl(304, 30%, 94%) 10%, hsl(347, 49%, 95%) 20%, hsl(11, 49%, 95%) 30%, hsl(30, 35%, 94%) 40%, hsl(60, 16%, 94%) 50%, hsl(41, 19%, 94%) 60%, hsl(29, 19%, 94%) 70%, hsl(20, 15%, 94%) 80%, hsl(11, 10%, 93%) 90%, hsl(0, 6%, 93%) 100%)",
       backgroundImage:
         "linear-gradient(45deg, hsl(240, 46%, 95%) 0%, hsl(304, 30%, 94%) 10%, hsl(347, 49%, 95%) 20%, hsl(11, 49%, 95%) 30%, hsl(30, 35%, 94%) 40%, hsl(60, 16%, 94%) 50%, hsl(41, 19%, 94%) 60%, hsl(29, 19%, 94%) 70%, hsl(20, 15%, 94%) 80%, hsl(11, 10%, 93%) 90%, hsl(0, 6%, 93%) 100%)",
     },
@@ -78,9 +115,8 @@ function Signup() {
   };
 
   return (
-    
     <section style={styles.section}>
-        <style>{`
+      <style>{`
                 .place-holder input::placeholder {
                 color: #787676; /* Placeholder text color */
                 opacity: 1; /* Placeholder text opacity */
@@ -102,7 +138,8 @@ function Signup() {
               below to sign up.
             </Text>
           </div>
-          <Form form={form}
+          <Form
+            form={form}
             name="signup"
             initialValues={{
               remember: true,
@@ -121,7 +158,9 @@ function Signup() {
               ]}
             >
               <Input
-                prefix={<UserAddOutlined style={{ color: "rgba(0,0,0,.80)" }} />}
+                prefix={
+                  <UserAddOutlined style={{ color: "rgba(0,0,0,.80)" }} />
+                }
                 type="name"
                 placeholder="John Doe"
                 style={{ borderColor: "#4D4B4B" }}
@@ -145,7 +184,6 @@ function Signup() {
                 style={{ borderColor: "#4D4B4B" }}
                 className="place-holder"
               />
-              
             </Form.Item>
             <Form.Item
               name="password"
@@ -185,6 +223,24 @@ function Signup() {
               <Button block type="primary" htmlType="submit">
                 Signup
               </Button>
+              <GoogleLogin
+                clientId="637568304248-85h5n2gvvjahf6ajralrnn0ab1kcofap.apps.googleusercontent.com"
+                onSuccess={responseGoogleSuccess}
+                onFailure={responseGoogleFailure}
+                cookiePolicy={"single_host_origin"}
+                render={(renderProps) => (
+                  <Button
+                    block
+                    type="primary"
+                    icon={<GoogleOutlined />}
+                    style={{ marginTop: "5px" }}
+                    onClick={renderProps.onClick}
+                    disabled={renderProps.disabled}
+                  >
+                    Login with Google
+                  </Button>
+                )}
+              />
               <div style={{ marginTop: "16px", textAlign: "center" }}>
                 <Text>Already have an account? </Text>
                 <Link href="/login">Sign in now</Link>
