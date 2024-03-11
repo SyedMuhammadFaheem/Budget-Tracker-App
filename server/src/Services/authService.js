@@ -4,11 +4,13 @@ const hashing = require("../Utilities/passwords");
 
 const login = async (email, password) => {
   try {
+    console.log('hello')
     const user = await appDataSource.getRepository("User").findOneBy({
       email: email,
     });
     if (!user) return new Error("User doesn't exist!");
     const verified = hashing.verifyPassword(password, user.password);
+    // console.log(user)
     if (verified) return user;
     return new Error("Incorrect password!");
   } catch (error) {
@@ -16,13 +18,17 @@ const login = async (email, password) => {
   }
 };
 
-const signup = async (username, email, password) => {
+const signup = async (username, email, password, googleAuth) => {
   try {
     const user = await appDataSource.getRepository(User).findOneBy({
       email: email,
     });
-    if (user) return new Error("User already exists!");
+    console.log('here',user)
+    if (user && googleAuth) return await login(email,password)
+    else if (user) return new Error("User already exists!");
+    console.log('here 2',user)
     const hashedPassword = await hashing.hashPassword(password);
+    console.log('here 3',user)
 
     const userObj = {
       name: username,
@@ -32,7 +38,12 @@ const signup = async (username, email, password) => {
     };
     const newUser = appDataSource.getRepository(User);
     await newUser.save(userObj);
-    return userObj;
+    console.log('here 4',user)
+    const retUser= await appDataSource.getRepository(User).findOneBy({
+      email: email,
+    });
+    console.log('result',retUser)
+    return retUser;
   } catch (error) {
     return error;
   }

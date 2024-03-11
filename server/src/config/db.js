@@ -10,6 +10,7 @@ const appDataSource = new dbConnect.DataSource({
     synchronize: true,
     dropSchema: true,
     entities: ["src/models/*.js"],
+    logging: true
   });
 
 module.exports = appDataSource

@@ -5,6 +5,7 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const result = await authService.login(email, password);
     if (!result) throw new Error("Error in registering with Google Account");
+    
     res
       .status(201)
       .send({ user: result, message: "User signed in successfully!" });
@@ -27,10 +28,11 @@ const signup = async (req, res) => {
 
 const google = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    console.log(username, email, password);
-    const result = await authService.signup(username, email, password);
+    const { username, email, password, googleAuth } = req.body;
+    console.log(username, email, password, googleAuth )
+    const result = await authService.signup(username, email, password, googleAuth);
     if (!result) throw new Error("Error in registering with Google Account");
+    // console.log("hehe",result)
     res
       .status(201)
       .send({ user: result, message: "User signed up successfully!" });

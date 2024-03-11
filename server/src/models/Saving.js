@@ -9,18 +9,23 @@ const Saving = new EntitySchema({
             primary: true,
             generated: true
         },
-        amount: {
-            type: 'float'
+        targetAmount: {
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
+            nullable: false
         },
-        category: {
-            type: 'varchar'
-        },
+        deadline: {
+            type: 'date',
+            nullable: false
+        }
+       
     },
     relations: {
-        income: {
+        savedBy: {
             type: 'many-to-one',
-            target: 'Income',
-            inverseSide: 'has'
+            target: 'User',
+            inverseSide: 'savings'
         }
     }
 });

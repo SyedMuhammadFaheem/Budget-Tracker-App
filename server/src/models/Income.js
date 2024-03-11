@@ -1,40 +1,45 @@
-const { EntitySchema } = require('typeorm');
+const { EntitySchema } = require("typeorm");
+
+const IncomeType = {
+  REGULAR: "regular",
+  ONE_TIME: "one-time",
+  PASSIVE: "passive",
+};
 
 const Income = new EntitySchema({
-    name: 'Income',
-    tableName: 'income',
-    columns: {
-        id: {
-            type: 'int',
-            primary: true,
-            generated: true
-        },
-        amount: {
-            type: 'float'
-        },
-        incomeTitle: {
-            type: 'varchar'
-        },
+  name: "Income",
+  tableName: "incomes",
+  columns: {
+    id: {
+      type: "int",
+      primary: true,
+      generated: true,
     },
-    relations: {
-        user: {
-            type: 'many-to-one',
-            target: 'User',
-            inverseSide: 'earns'
-        },
-        has: {
-            type: 'one-to-many',
-            target: 'Expense',
-            inverseSide: 'income'
-        },
-        has: {
-            type: 'one-to-many',
-            target: 'Saving',
-            inverseSide: 'income'
-        }
-
-    }
-    
+    name: {
+      type: "varchar",
+      nullable: false,
+    },
+    amount: {
+      type: "decimal",
+      precision: 10,
+      scale: 2,
+    },
+    receivedDate: {
+      type: "date",
+    },
+    type: {
+      type: "enum",
+      enum: Object.values(IncomeType),
+      default: IncomeType.REGULAR,
+    },
+  },
+  relations: {
+    earned: {
+      type: "many-to-one",
+      target: "User",
+      inverseSide: "incomes",
+    },
+  },
 });
 
-module.exports = Income;
+module.exports = { Income, IncomeType };

@@ -1,0 +1,18 @@
+.edit-user-details-container {
+    width: 400px; 
+    margin: 0 auto; 
+  }
+  
+  .edit-user-details-btn-container {
+    text-align: right; 
+  }
+  
+  .edit-user-details-btn-group {
+    display: inline-block;
+  }
+  
+ 
+  .ant-btn-primary {
+    margin-right: 10px;
+  }
+  

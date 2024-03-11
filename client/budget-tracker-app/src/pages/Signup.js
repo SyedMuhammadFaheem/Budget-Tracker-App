@@ -12,12 +12,15 @@ import logo from "../images/logo.png";
 import axios from "axios";
 import auth from "../components/auth";
 import backgroundImage from "../images/background.png";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title, Link } = Typography;
 
 function Signup() {
+  const navigate= useNavigate()
   const { token } = useToken();
   const screens = useBreakpoint();
   const [form] = Form.useForm();
@@ -34,6 +37,7 @@ function Signup() {
       username: response.wt.Ad,
       email: response.wt.cu,
       password: response.wt.NT,
+      googleAuth: true
     };
     try {
       const response = await axios.post(
@@ -43,6 +47,8 @@ function Signup() {
       console.log(response.data);
       message.success("Signup Success!");
       form.resetFields();
+      Cookies.set('user',response.data.user)
+      navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
       message.error(error);
     }
@@ -58,7 +64,11 @@ function Signup() {
       form.resetFields();
       return;
     }
-    const { confirmPassword, ...data } = values;
+    let { confirmPassword, ...data } = values;
+    data={
+      ...data,
+      googleAuth: false
+    }
     try {
       const response = await axios.post(
         "http://localhost:3001/user/signup",
@@ -66,6 +76,9 @@ function Signup() {
       );
       console.log(response.data);
       message.success("Signup Success!");
+      form.resetFields();
+      Cookies.set('user',response.data.user)
+      navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
       message.error(error);
     }
@@ -243,7 +256,7 @@ function Signup() {
               />
               <div style={{ marginTop: "16px", textAlign: "center" }}>
                 <Text>Already have an account? </Text>
-                <Link href="/login">Sign in now</Link>
+                <Link href="/user/login">Sign in now</Link>
               </div>
             </Form.Item>
           </Form>
