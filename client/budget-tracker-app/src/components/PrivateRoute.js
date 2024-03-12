@@ -1,11 +1,48 @@
-import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
-import Cookies from 'js-cookie'
+import React, { useEffect, useState } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
+import axios from "axios";
+
 function PrivateRoute() {
-    const user = Cookies.get('user') 
-  return (
-    (user) ? <Outlet/> : <Navigate to="/user/login"/>
-  )
+  const [auth, setAuth] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = Cookies.get("user");
+      if (user) {
+        const [id, pass] = user.split(":");
+        const data = {
+          id: id,
+        };
+        try {
+          const response = await axios.post(
+            "http://localhost:3001/user/get-password",
+            data
+          );
+          const resPass = response.data.password;
+          if (resPass === pass) {
+            setAuth(true);
+          } else {
+            setAuth(false);
+          }
+        } catch (error) {
+          console.error(error);
+          setAuth(false);
+        }
+      } else {
+        setAuth(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (auth === null) {
+    return null;
+  } else if (auth) {
+    return <Outlet />;
+  } else {
+    return <Navigate to="/user/login" />;
+  }
 }
 
-export default PrivateRoute
+export default PrivateRoute;

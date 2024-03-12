@@ -8,7 +8,6 @@ const appDataSource = new dbConnect.DataSource({
     password: "123",
     database: "Budget-Tracker-App",
     synchronize: true,
-    dropSchema: true,
     entities: ["src/models/*.js"],
     logging: true
   });

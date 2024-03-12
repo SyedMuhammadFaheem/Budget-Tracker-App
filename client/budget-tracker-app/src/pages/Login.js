@@ -39,7 +39,8 @@ function Login() {
       console.log(response.data.user);
       message.success("Login Success!");
       form.resetFields();
-      Cookies.set('user',response.data.user)
+      const cookie= `${response.data.user.id}:${response.data.user.password}`
+      Cookies.set('user',cookie)
       navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
       message.error(error);
@@ -60,7 +61,8 @@ function Login() {
       console.log(response.data);
       message.success("Login Success!");
       form.resetFields();
-      Cookies.set('user',response.data.user)
+      const cookie= `${response.data.user.id}:${response.data.user.password}`
+      Cookies.set('user',cookie)
       navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
       message.error(error);
@@ -179,7 +181,7 @@ function Login() {
               />
             </Form.Item>
             <Form.Item>
-              <a style={{ float: "right" }} href="/login">
+              <a style={{ float: "right" }} href="/user/login">
                 Forgot password?
               </a>
             </Form.Item>

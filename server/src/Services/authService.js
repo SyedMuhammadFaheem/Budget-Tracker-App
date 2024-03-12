@@ -5,12 +5,11 @@ const hashing = require("../Utilities/passwords");
 const login = async (email, password) => {
   try {
     console.log('hello')
-    const user = await appDataSource.getRepository("User").findOneBy({
+    const user = await appDataSource.getRepository(User).findOneBy({
       email: email,
     });
     if (!user) return new Error("User doesn't exist!");
     const verified = hashing.verifyPassword(password, user.password);
-    // console.log(user)
     if (verified) return user;
     return new Error("Incorrect password!");
   } catch (error) {

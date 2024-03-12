@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Row, Col, Select } from "antd";
+import { Form, Input, Button, Row, Col, Select,Divider } from "antd";
 import { NumberOutlined,EditOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import "../styles/EditUserDetails.css";
 import Navbar from "./Navbar";
@@ -29,6 +29,9 @@ const EditUserDetails = ({ userData }) => {
   return (
     <>
       <Navbar selectedValue="2" />
+      <Divider orientation="center" style={{ color: "#1890ff" }}>
+          Edit Profile
+        </Divider>
       <div className="edit-user-details-container" style={{ marginTop: "20px" }}>
         <Form
           form={form}

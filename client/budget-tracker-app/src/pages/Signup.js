@@ -47,7 +47,8 @@ function Signup() {
       console.log(response.data);
       message.success("Signup Success!");
       form.resetFields();
-      Cookies.set('user',response.data.user)
+      const cookie= `${response.data.user.id}:${response.data.user.password}`
+      Cookies.set('user',cookie)
       navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
       message.error(error);
@@ -77,7 +78,8 @@ function Signup() {
       console.log(response.data);
       message.success("Signup Success!");
       form.resetFields();
-      Cookies.set('user',response.data.user)
+      const cookie= `${response.data.user.id}:${response.data.user.password}`
+      Cookies.set('user',cookie)
       navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
       message.error(error);

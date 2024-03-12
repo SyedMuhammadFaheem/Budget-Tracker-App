@@ -113,7 +113,7 @@ const Dashboard = ({
             type="link"
             icon={<DeleteOutlined style={{ color: "#f5222d" }} />}
           />
-          <Button type="link" icon={<EditOutlined />} />
+          <Button type="link" icon={<EditOutlined />} onClick={editExpense} />
         </span>
       ),
     },
@@ -126,6 +126,10 @@ const Dashboard = ({
   }
   const addNewIncome=()=>{
     navigate(`/user/add-new-income/${id}`)
+  }
+
+  const editExpense=(e)=>{
+    console.log(e)
   }
 
   return (
