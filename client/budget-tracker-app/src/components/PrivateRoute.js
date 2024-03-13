@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 
 function PrivateRoute() {
   const [auth, setAuth] = useState(null);
+  const {id} = useParams()
   useEffect(() => {
     const fetchData = async () => {
       const user = Cookies.get("user");
       if (user) {
-        const [id, pass] = user.split(":");
+        const [blankId, pass] = user.split(":");
         const data = {
           id: id,
         };

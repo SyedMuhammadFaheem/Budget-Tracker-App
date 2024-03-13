@@ -6,7 +6,7 @@ import avatar from "../images/avatar.jpg";
 import Cookies from "js-cookie";
 const { Header } = Layout;
 
-const Navbar = ({selectedValue}) => {
+const Navbar = ({name,selectedValue}) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ const Navbar = ({selectedValue}) => {
   
 
   const user = {
-    name: "Muhammad Faheem",
+    name: name,
     avatarUrl: avatar, 
   };
 

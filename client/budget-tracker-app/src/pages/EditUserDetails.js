@@ -1,15 +1,24 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Row, Col, Select,Divider } from "antd";
-import { NumberOutlined,EditOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
+import {
+  NumberOutlined,
+  EditOutlined,
+  SaveOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import "../styles/EditUserDetails.css";
+import axios from "axios";
 import Navbar from "./Navbar";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { Option } = Select;
 
-const EditUserDetails = ({ userData }) => {
+const EditUserDetails = () => {
+    const navigate= useNavigate()
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-
+  const { id } = useParams();
+  const [userData, setUserData] = useState(null);
   const handleEdit = () => {
     setIsEditing(true);
     form.setFieldsValue(userData);
@@ -20,19 +29,48 @@ const EditUserDetails = ({ userData }) => {
     form.resetFields();
   };
 
-  const handleSave = (values) => {
+  const handleSave = async (values) => {
     console.log("Updated user data:", values);
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/user/update-user-details/${id}`, values
+        );
+        console.log(response)
+        message.success('User Updated')
+        navigate(`user/dashboard/${id}`)
+    } catch (error) {
+      message.error(error.message);
+    }
     setIsEditing(false);
-    form.resetFields();
   };
 
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/user/get-user-details/${id}`
+        );
+        const { removeId, ...userData } = response.data.user;
+
+        setUserData(userData);
+      } catch (error) {
+          message.error('Error fecthing data');
+      }
+    };
+    getUserDetails();
+  }, []);
+
+  if (userData === null) return null;
   return (
     <>
       <Navbar selectedValue="2" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-          Edit Profile
-        </Divider>
-      <div className="edit-user-details-container" style={{ marginTop: "20px" }}>
+        Edit Profile
+      </Divider>
+      <div
+        className="edit-user-details-container"
+        style={{ marginTop: "20px" }}
+      >
         <Form
           form={form}
           onFinish={handleSave}
@@ -55,7 +93,10 @@ const EditUserDetails = ({ userData }) => {
                 name="email"
                 rules={[
                   { required: true, message: "Please enter an email!" },
-                  { type: "email", message: "Please enter a valid email address!" },
+                  {
+                    type: "email",
+                    message: "Please enter a valid email address!",
+                  },
                 ]}
               >
                 <Input disabled={!isEditing} prefix={<EditOutlined />} />
@@ -65,9 +106,14 @@ const EditUserDetails = ({ userData }) => {
               <Form.Item
                 label="Password"
                 name="password"
-                rules={[{ required: true, message: "Please enter a password!" }]}
+                rules={[
+                  { required: true, message: "Please enter a password!" },
+                ]}
               >
-                <Input.Password disabled={!isEditing} prefix={<EditOutlined />} />
+                <Input.Password
+                  disabled={!isEditing}
+                  prefix={<EditOutlined />}
+                />
               </Form.Item>
             </Col>
             <Col span={24}>

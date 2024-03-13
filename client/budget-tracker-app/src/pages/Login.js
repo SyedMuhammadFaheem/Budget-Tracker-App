@@ -69,6 +69,10 @@ function Login() {
     }
   };
 
+  useEffect(() => {
+    Cookies.remove('user')
+  })
+
   const styles = {
     section: {
       display: "flex",

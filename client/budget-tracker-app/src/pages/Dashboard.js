@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Statistic,
@@ -8,6 +8,7 @@ import {
   Progress,
   Button,
   Table,
+  message,
 } from "antd";
 import {
   WalletOutlined,
@@ -19,24 +20,41 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import Navbar from "./Navbar";
 import "../styles/Dashboard.css";
 
-const Dashboard = ({
-  userName,
-  balance,
-  totalIncome,
-  totalExpenses,
-  savings,
-  transactions,
-}) => {
+const Dashboard = ({ transactions }) => {
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+  const [balance, setBalance] = useState(0);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [savings, setSavings] = useState(0);
 
-    const navigate = useNavigate()
-  userName = "Faheem";
-  balance = 50000;
-  totalIncome = 150000;
-  totalExpenses = 50000;
-  savings = 25000;
+  useEffect(() => {
+    const getNumbers = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/user/get-numbers/${id}`
+        );
+        const { numbers } = response.data;
+        setUserName(numbers.name)
+        setBalance(parseFloat(numbers.balance));
+        setTotalIncome(parseFloat(numbers.income_amount));
+        setTotalExpenses(parseFloat(numbers.expense_amount));
+        setSavings(parseFloat(numbers.saving_amount));
+      } catch (error) {
+        message.error("Error fecthing numbers data");
+      }
+    };
+    getNumbers();
+  }, [balance, totalIncome, totalExpenses, savings]);
+  // userName = "Faheem";
+  // balance = 50000;
+  // totalIncome = 150000;
+  // totalExpenses = 50000;
+  // savings = 25000;
   transactions = [
     {
       title: "Online Shopping",
@@ -63,10 +81,11 @@ const Dashboard = ({
   const expensesPercentage =
     (totalExpenses / (totalIncome + totalExpenses)) * 100;
   const savingsPercentage =
-    ((totalIncome - totalExpenses) / (totalIncome + totalExpenses)) * 100;
+    (((totalIncome - totalExpenses) / (totalIncome + totalExpenses)) * 100).toFixed(0);
   const deadline = "2024-12-31";
-  const targetAmount = 50000;
-  const totalSavedAmount = 25000;
+  const targetAmount = savings;
+  const totalSavedAmount = totalIncome - totalExpenses >= 0 ? totalIncome - totalExpenses : 0;
+  console.log(totalSavedAmount)
 
   // Calculate the remaining days until the deadline
   const remainingDays = Math.ceil(
@@ -119,22 +138,22 @@ const Dashboard = ({
     },
   ];
 
-  const {id} = useParams()
+  const { id } = useParams();
 
-  const addNewExpense=()=>{
-    navigate(`/user/add-new-expense/${id}`)
-  }
-  const addNewIncome=()=>{
-    navigate(`/user/add-new-income/${id}`)
-  }
+  const addNewExpense = () => {
+    navigate(`/user/add-new-expense/${id}`);
+  };
+  const addNewIncome = () => {
+    navigate(`/user/add-new-income/${id}`);
+  };
 
-  const editExpense=(e)=>{
-    console.log(e)
-  }
+  const editExpense = (e) => {
+    console.log(e);
+  };
 
   return (
     <>
-      <Navbar selectedValue="1" />
+      <Navbar name={userName} selectedValue="1" />
       <div className="dashboard-container" style={{ marginTop: "15px" }}>
         <Row gutter={[16, 16]} justify="center">
           <Col xs={24} sm={12} md={8} lg={6} xl={6}>

@@ -9,7 +9,7 @@ const appDataSource = new dbConnect.DataSource({
     database: "Budget-Tracker-App",
     synchronize: true,
     entities: ["src/models/*.js"],
-    logging: true
+    logging: true,
   });
 
 module.exports = appDataSource
