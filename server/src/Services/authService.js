@@ -1,11 +1,10 @@
-const User = require("../models/User");
 const appDataSource = require("../config/db");
 const hashing = require("../Utilities/passwords");
 
 const login = async (email, password) => {
   try {
     console.log('hello')
-    const user = await appDataSource.getRepository(User).findOneBy({
+    const user = await appDataSource.getRepository("User").findOneBy({
       email: email,
     });
     if (!user) return new Error("User doesn't exist!");
@@ -19,7 +18,7 @@ const login = async (email, password) => {
 
 const signup = async (username, email, password, googleAuth) => {
   try {
-    const user = await appDataSource.getRepository(User).findOneBy({
+    const user = await appDataSource.getRepository("User").findOneBy({
       email: email,
     });
     console.log('here',user)
@@ -35,10 +34,10 @@ const signup = async (username, email, password, googleAuth) => {
       password: hashedPassword,
       role: "user",
     };
-    const newUser = appDataSource.getRepository(User);
+    const newUser = appDataSource.getRepository("User");
     await newUser.save(userObj);
     console.log('here 4',user)
-    const retUser= await appDataSource.getRepository(User).findOneBy({
+    const retUser= await appDataSource.getRepository("User").findOneBy({
       email: email,
     });
     console.log('result',retUser)

@@ -1,31 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  Statistic,
-  Row,
-  Col,
-  Divider,
-  Progress,
-  Button,
-  Table,
-  message,
-} from "antd";
+import { Card, Statistic, Row, Col, Divider, Progress, message } from "antd";
 import {
   WalletOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
   DollarOutlined,
-  EditOutlined,
-  PlusOutlined,
-  DeleteOutlined,
 } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import "../styles/Dashboard.css";
+import IncomeTable from "./IncomeTable";
+import ExpenseTable from "./ExpenseTable";
 
 const Dashboard = ({ transactions }) => {
-  const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [balance, setBalance] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
@@ -39,7 +27,7 @@ const Dashboard = ({ transactions }) => {
           `http://localhost:3001/user/get-numbers/${id}`
         );
         const { numbers } = response.data;
-        setUserName(numbers.name)
+        setUserName(numbers.name);
         setBalance(parseFloat(numbers.balance));
         setTotalIncome(parseFloat(numbers.income_amount));
         setTotalExpenses(parseFloat(numbers.expense_amount));
@@ -50,42 +38,19 @@ const Dashboard = ({ transactions }) => {
     };
     getNumbers();
   }, [balance, totalIncome, totalExpenses, savings]);
-  // userName = "Faheem";
-  // balance = 50000;
-  // totalIncome = 150000;
-  // totalExpenses = 50000;
-  // savings = 25000;
-  transactions = [
-    {
-      title: "Online Shopping",
-      description: "Purchase from ABC Store",
-      amount: 50.0,
-    },
-    {
-      title: "Restaurant",
-      description: "Dinner with friends",
-      amount: 30.0,
-    },
-    {
-      title: "Salary",
-      description: "Monthly income",
-      amount: 2000.0,
-    },
-    {
-      title: "Grocery",
-      description: "Weekly grocery shopping",
-      amount: 100.0,
-    },
-  ];
+
   const incomePercentage = (totalIncome / (totalIncome + totalExpenses)) * 100;
   const expensesPercentage =
     (totalExpenses / (totalIncome + totalExpenses)) * 100;
-  const savingsPercentage =
-    (((totalIncome - totalExpenses) / (totalIncome + totalExpenses)) * 100).toFixed(0);
+  const savingsPercentage = (
+    ((totalIncome - totalExpenses) / (totalIncome + totalExpenses)) *
+    100
+  ).toFixed(0);
   const deadline = "2024-12-31";
   const targetAmount = savings;
-  const totalSavedAmount = totalIncome - totalExpenses >= 0 ? totalIncome - totalExpenses : 0;
-  console.log(totalSavedAmount)
+  const totalSavedAmount =
+    totalIncome - totalExpenses >= 0 ? totalIncome - totalExpenses : 0;
+  console.log(totalSavedAmount);
 
   // Calculate the remaining days until the deadline
   const remainingDays = Math.ceil(
@@ -94,62 +59,8 @@ const Dashboard = ({ transactions }) => {
 
   // Check if enough amount is saved before the deadline
   const isGoalAchieved = totalSavedAmount >= targetAmount && remainingDays >= 0;
-  const columns = [
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-      align: "center",
-      sorter: (a, b) => a.title.localeCompare(b.title),
-      filters: [
-        { text: "Online Shopping", value: "Online Shopping" },
-        { text: "Restaurant", value: "Restaurant" },
-        { text: "Salary", value: "Salary" },
-        { text: "Grocery", value: "Grocery" },
-      ],
-      onFilter: (value, record) => record.title.includes(value),
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      align: "center",
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      align: "center",
-      sorter: (a, b) => a.amount - b.amount,
-    },
-    {
-      title: "Action",
-      key: "action",
-      align: "center",
-      render: (text, record) => (
-        <span>
-          <Button
-            type="link"
-            icon={<DeleteOutlined style={{ color: "#f5222d" }} />}
-          />
-          <Button type="link" icon={<EditOutlined />} onClick={editExpense} />
-        </span>
-      ),
-    },
-  ];
 
   const { id } = useParams();
-
-  const addNewExpense = () => {
-    navigate(`/user/add-new-expense/${id}`);
-  };
-  const addNewIncome = () => {
-    navigate(`/user/add-new-income/${id}`);
-  };
-
-  const editExpense = (e) => {
-    console.log(e);
-  };
 
   return (
     <>
@@ -265,61 +176,19 @@ const Dashboard = ({ transactions }) => {
           </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>
-          Expenses Details
+          Expenses History
         </Divider>
         <Row gutter={[16, 16]} justify="center">
           <Col span={24}>
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={addNewExpense}
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                margin: "8px 0 8px 8px",
-                borderRadius: "4px",
-                width: "fit-content",
-                padding: "0 12px",
-              }}
-            >
-              Add New Expense
-            </Button>
-            <Table
-              columns={columns}
-              dataSource={transactions}
-              pagination={false}
-            />
+            <ExpenseTable />
           </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>
-          Income Details
+          Income History
         </Divider>
         <Row gutter={[16, 16]} justify="center">
           <Col span={24}>
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={addNewIncome}
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                margin: "8px 0 8px 8px",
-                borderRadius: "4px",
-                width: "fit-content",
-                padding: "0 12px",
-              }}
-            >
-              Add New Income
-            </Button>
-            <Table
-              columns={columns}
-              dataSource={transactions}
-              pagination={false}
-            />
+            <IncomeTable />
           </Col>
         </Row>
       </div>
