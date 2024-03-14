@@ -8,6 +8,7 @@ import EditUserDetails from "./pages/EditUserDetails";
 import EditExpenses from "./pages/EditExpenses";
 import AddExpenses from "./pages/AddExpenses";
 import AddIncome from "./pages/AddIncome";
+import EditSavings from "./pages/EditSavings";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
             <Route path="/user/dashboard/:id" element={<Dashboard />} />
             <Route path="/user/edit-user-profile/:id" element={<EditUserDetails />} />
             <Route path="/user/edit-expenses/:id" element={<EditExpenses />} />
+            <Route path="/user/edit-savings/:id" element={<EditSavings />} />
             <Route path="/user/add-new-expense/:id" element={<AddExpenses />} />
             <Route path="/user/add-new-income/:id" element={<AddIncome />} />
           </Route>

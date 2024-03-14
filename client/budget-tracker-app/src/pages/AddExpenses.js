@@ -44,17 +44,8 @@ const AddExpense = () => {
             >
               <Input prefix={<NumberOutlined/>}/>
             </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              label="Expense Date"
-              name="expenseDate"
-              rules={[{ required: true, message: "Please select an expense date!" }]}
-            >
-              <Input prefix={<EditOutlined/>}/>
-            </Form.Item>
-          </Col>
-          <Col span={24}>
+            </Col>
+            <Col span={24}>
             <Form.Item
               label="Type"
               name="type"
@@ -67,6 +58,16 @@ const AddExpense = () => {
               </Select>
             </Form.Item>
           </Col>
+          <Col span={24}>
+            <Form.Item
+              label="Expense Date"
+              name="expenseDate"
+              rules={[{ required: true, message: "Please select an expense date!" }]}
+            >
+              <Input prefix={<EditOutlined/>}/>
+            </Form.Item>
+          </Col>
+          
           <Col span={24} className="edit-user-details-btn-container">
             <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
               Save

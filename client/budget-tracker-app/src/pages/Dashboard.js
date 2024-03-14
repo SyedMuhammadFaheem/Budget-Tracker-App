@@ -12,6 +12,7 @@ import Navbar from "./Navbar";
 import "../styles/Dashboard.css";
 import IncomeTable from "./IncomeTable";
 import ExpenseTable from "./ExpenseTable";
+import SavingTable from "./SavingTable";
 
 const Dashboard = ({ transactions }) => {
   const [userName, setUserName] = useState("");
@@ -176,6 +177,14 @@ const Dashboard = ({ transactions }) => {
           </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>
+          Income History
+        </Divider>
+        <Row gutter={[16, 16]} justify="center">
+          <Col span={24}>
+            <IncomeTable />
+          </Col>
+        </Row>
+        <Divider orientation="center" style={{ color: "#1890ff" }}>
           Expenses History
         </Divider>
         <Row gutter={[16, 16]} justify="center">
@@ -184,11 +193,11 @@ const Dashboard = ({ transactions }) => {
           </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>
-          Income History
+          Savings History
         </Divider>
         <Row gutter={[16, 16]} justify="center">
           <Col span={24}>
-            <IncomeTable />
+            <SavingTable />
           </Col>
         </Row>
       </div>

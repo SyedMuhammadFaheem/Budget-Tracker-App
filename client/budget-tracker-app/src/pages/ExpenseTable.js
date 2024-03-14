@@ -94,7 +94,8 @@ function ExpenseTable() {
   };
 
   const editExpense = (id) => {
-    console.log(id);
+      console.log(id);
+      navigate(`/user/edit-expenses/${id}`)
   };
 
   return (

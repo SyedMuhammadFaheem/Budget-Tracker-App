@@ -126,10 +126,11 @@ const getExpense = async (id) => {
 const getSaving = async (id) => {
   try {
     id = Number(id);
+    console.log('hello')
     const user = appDataSource.getRepository("User");
     const income = await user
       .createQueryBuilder("user")
-      .innerJoin("user.saving", "saving", "saving.savedBy = user.id")
+      .innerJoin("user.savings", "saving", "saving.savedBy = user.id")
       .select(["saving.id, saving.targetAmount, saving.deadline "])
       .where("user.id = :id", { id: id })
       .getRawMany();
