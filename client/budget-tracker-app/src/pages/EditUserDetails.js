@@ -37,7 +37,7 @@ const EditUserDetails = () => {
         );
         console.log(response)
         message.success('User Updated')
-        navigate(`user/dashboard/${id}`)
+        navigate(`/user/dashboard/${id}`)
     } catch (error) {
       message.error(error.message);
     }

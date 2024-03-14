@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Card, Statistic, Row, Col, Divider, Progress, message } from "antd";
+import {
+  Card,
+  Statistic,
+  Row,
+  Col,
+  Divider,
+  Progress,
+  message,
+  Carousel,
+} from "antd";
 import {
   WalletOutlined,
   ArrowUpOutlined,
@@ -14,12 +23,11 @@ import IncomeTable from "./IncomeTable";
 import ExpenseTable from "./ExpenseTable";
 import SavingTable from "./SavingTable";
 
-const Dashboard = ({ transactions }) => {
+const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [balance, setBalance] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
-  const [savings, setSavings] = useState(0);
 
   useEffect(() => {
     const getNumbers = async () => {
@@ -27,42 +35,72 @@ const Dashboard = ({ transactions }) => {
         const response = await axios.get(
           `http://localhost:3001/user/get-numbers/${id}`
         );
+
         const { numbers } = response.data;
         setUserName(numbers.name);
-        setBalance(parseFloat(numbers.balance));
+        setBalance(parseFloat(numbers.income_amount));
         setTotalIncome(parseFloat(numbers.income_amount));
         setTotalExpenses(parseFloat(numbers.expense_amount));
-        setSavings(parseFloat(numbers.saving_amount));
+        
+        getSaving();
       } catch (error) {
         message.error("Error fecthing numbers data");
       }
     };
     getNumbers();
-  }, [balance, totalIncome, totalExpenses, savings]);
+  }, [balance, totalIncome, totalExpenses]);
+
+  const setSavingCarousel = (saving) => {
+    const temp = [];
+
+    for (let i = 0; i < saving.length; i++) {
+      const goal = {
+        name: saving[i].name,
+        savingsPercentage: (
+          ((totalIncome - totalExpenses) / (parseFloat(saving[i].targetAmount))) *
+          100
+        ).toFixed(0),
+        isGoalAchieved:
+          totalIncome - totalExpenses >= saving[i].targetAmount &&
+          Math.ceil(
+            (new Date(saving[i].deadline) - new Date()) / (1000 * 60 * 60 * 24)
+          ) >= 0,
+        targetAmount: parseFloat(saving[i].targetAmount),
+        totalSavedAmount:
+          totalIncome - totalExpenses >= 0 ? totalIncome - totalExpenses : 0,
+        remainingDays: Math.ceil(
+          (new Date(saving[i].deadline) - new Date()) / (1000 * 60 * 60 * 24)
+        ),
+      };
+      temp.push(goal);
+    }
+    console.log(temp)
+    setSavingGoals(temp);
+  };
+
+  const [savingGoals, setSavingGoals] = useState(null);
+  const getSaving = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/user/get-saving/${id}`
+      );
+      console.log(response.data);
+      const { saving } = response.data;
+      setSavingCarousel(saving);
+    } catch (error) {
+      message.error("Error fetching savings!");
+    }
+  };
+  useEffect(() => {
+    
+  }, []);
 
   const incomePercentage = (totalIncome / (totalIncome + totalExpenses)) * 100;
   const expensesPercentage =
     (totalExpenses / (totalIncome + totalExpenses)) * 100;
-  const savingsPercentage = (
-    ((totalIncome - totalExpenses) / (totalIncome + totalExpenses)) *
-    100
-  ).toFixed(0);
-  const deadline = "2024-12-31";
-  const targetAmount = savings;
-  const totalSavedAmount =
-    totalIncome - totalExpenses >= 0 ? totalIncome - totalExpenses : 0;
-  console.log(totalSavedAmount);
-
-  // Calculate the remaining days until the deadline
-  const remainingDays = Math.ceil(
-    (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
-  );
-
-  // Check if enough amount is saved before the deadline
-  const isGoalAchieved = totalSavedAmount >= targetAmount && remainingDays >= 0;
 
   const { id } = useParams();
-
+  if(savingGoals==null) return   
   return (
     <>
       <Navbar name={userName} selectedValue="1" />
@@ -117,7 +155,7 @@ const Dashboard = ({ transactions }) => {
             >
               <Statistic
                 title="Savings"
-                value={savings}
+                value={totalIncome-totalExpenses}
                 prefix={<WalletOutlined style={{ fontSize: "24px" }} />}
                 valueStyle={{ fontSize: "24px" }}
                 titleStyle={{ fontWeight: "bold" }}
@@ -154,26 +192,44 @@ const Dashboard = ({ transactions }) => {
             </Card>
           </Col>
           <Col span={12}>
-            <Card className="dashboard-card" style={{ height: "100%" }}>
-              <h3>Saving Goal Progress</h3>
-              <Progress
-                percent={savingsPercentage}
-                status={savingsPercentage >= 100 ? "success" : "normal"}
-                strokeWidth={20}
-              />
-              <p>
-                {isGoalAchieved ? (
-                  "Congratulations! You've achieved your saving goal."
-                ) : (
-                  <>
-                    You're making progress towards your saving goal. <br />
-                    You need to save ${targetAmount - totalSavedAmount} more to
-                    achieve your goal by the deadline. <br />
-                    You have {remainingDays} days left until the deadline.
-                  </>
-                )}
-              </p>
-            </Card>
+            <Carousel autoplay >
+              {savingGoals
+                ? savingGoals.map((goal, index) => (
+                  <div key={index}>
+                    <Card 
+                          className="dashboard-card"
+                          style={{ height: "100%" }}
+                        >
+                          <h3>Saving Goal Progress</h3>
+                          <Progress
+                            percent={goal.savingsPercentage}
+                            status={
+                              goal.savingsPercentage >= 100
+                                ? "success"
+                                : "normal"
+                            }
+                            strokeWidth={20}
+                          />
+                          <p>
+                            {goal.isGoalAchieved ? (
+                              "Congratulations! You've achieved your saving goal."
+                            ) : (
+                              <>
+                                You're making progress towards your saving goal.{" "}
+                                <br />
+                                You need to save $
+                                {goal.targetAmount - (goal.totalSavedAmount)} more
+                                to achieve your goal by the deadline. <br />
+                                You have {goal.remainingDays} days left until
+                                the deadline.
+                              </>
+                            )}
+                          </p>
+                        </Card>
+                    </div>
+                  ))
+                : null}
+            </Carousel>
           </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>

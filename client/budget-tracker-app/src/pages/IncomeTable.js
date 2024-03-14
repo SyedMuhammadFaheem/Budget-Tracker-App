@@ -27,22 +27,13 @@ function IncomeTable() {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      align: "center",
-      sorter: (a, b) => a.id - b.id,
-      filters: null,
+      align: "center"
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
       align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      filters: [
-        { text: "Salary", value: "Salary" },
-        { text: "Grocery", value: "Grocery" },
-        // Add more filters as needed
-      ],
-      onFilter: (value, record) => record.name === value,
     },
     {
       title: "Amount",
@@ -50,23 +41,7 @@ function IncomeTable() {
       key: "amount",
       align: "center",
       sorter: (a, b) => a.amount - b.amount,
-      filters: [
-        { text: "Less than $50", value: "lt50" },
-        { text: "$50 - $100", value: "50to100" },
-        { text: "More than $100", value: "gt100" },
-      ],
-      onFilter: (value, record) => {
-        switch (value) {
-          case "lt50":
-            return record.amount < 50;
-          case "50to100":
-            return record.amount >= 50 && record.amount <= 100;
-          case "gt100":
-            return record.amount > 100;
-          default:
-            return false;
-        }
-      },
+      
     },
     {
       title: "Type",
@@ -76,6 +51,7 @@ function IncomeTable() {
       filters: [
         { text: "Regular", value: "regular" },
         { text: "One-time", value: "one-time" },
+        { text: "Passive", value: "passive" },
       ],
       onFilter: (value, record) => record.type === value,
     },
@@ -84,32 +60,7 @@ function IncomeTable() {
       dataIndex: "receivedDate",
       key: "receivedDate",
       align: "center",
-      filters: [
-        { text: "Today", value: "today" },
-        { text: "Yesterday", value: "yesterday" },
-      ],
-      onFilter: (value, record) => {
-        const today = new Date();
-        const recordDate = new Date(record.receivedDate);
-        switch (value) {
-          case "today":
-            return (
-              recordDate.getDate() === today.getDate() &&
-              recordDate.getMonth() === today.getMonth() &&
-              recordDate.getFullYear() === today.getFullYear()
-            );
-          case "yesterday":
-            const yesterday = new Date(today);
-            yesterday.setDate(today.getDate() - 1);
-            return (
-              recordDate.getDate() === yesterday.getDate() &&
-              recordDate.getMonth() === yesterday.getMonth() &&
-              recordDate.getFullYear() === yesterday.getFullYear()
-            );
-          default:
-            return false;
-        }
-      },
+      sorter: (a, b) => new Date(a.receivedDate) - new Date(b.receivedDate),
     },
     {
       title: "Action",
@@ -119,7 +70,8 @@ function IncomeTable() {
         <span>
           <Button
             type="link"
-            icon={<DeleteOutlined style={{ color: "#f5222d" }} />}
+                  icon={<DeleteOutlined />}
+                  onClick={() => deleteIncome(record.id)}
           />
           <Button
             type="link"
@@ -134,9 +86,23 @@ function IncomeTable() {
   const addNewIncome = () => {
     navigate(`/user/add-new-income/${id}`);
   };
-  const editIncome = (id) => {
-    console.log(id);
-  };
+  const editIncome = (incomeId) => {
+      console.log(incomeId);
+      navigate(`/user/edit-incomes/${id}/${incomeId}`);
+    };
+    
+    const deleteIncome = async (incomeId) => {
+        console.log(incomeId)
+        try {
+            const response = await axios.delete(`http://localhost:3001/income/delete-income/${incomeId}`)
+            console.log(response.data)
+            
+            message.success("Income deleted")
+            window.location.reload()
+        } catch (error) {
+            message.error("Error in deleting income")
+        }
+    }
 
   return (
     <>

@@ -9,6 +9,10 @@ const Saving = new EntitySchema({
             primary: true,
             generated: true
         },
+        name: {
+            type: "varchar",
+            nullable: false,
+        },
         targetAmount: {
             type: 'decimal',
             precision: 10,

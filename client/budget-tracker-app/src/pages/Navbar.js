@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 const { Header } = Layout;
 
 const Navbar = ({name,selectedValue}) => {
-  const { id } = useParams();
+  const { id, _ } = useParams();
   const navigate = useNavigate();
 
   const logOut = () => {

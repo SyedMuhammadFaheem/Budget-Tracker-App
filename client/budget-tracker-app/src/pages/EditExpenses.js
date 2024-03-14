@@ -1,15 +1,23 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Row, Col, Select, Divider } from "antd";
-import { NumberOutlined,EditOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { Form, Input, Button, Row, Col, Select, Divider,message } from "antd";
+import {
+  NumberOutlined,
+  EditOutlined,
+  SaveOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import "../styles/EditUserDetails.css";
 import Navbar from "./Navbar";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { Option } = Select;
 
-const EditExpenses = ({ expenseData }) => {
+const EditExpenses = () => {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-
+  const { id, expenseId } = useParams();
+  const navigate = useNavigate();
   const handleEdit = () => {
     setIsEditing(true);
     form.setFieldsValue(expenseData);
@@ -20,19 +28,50 @@ const EditExpenses = ({ expenseData }) => {
     form.resetFields();
   };
 
-  const handleSave = (values) => {
+  const handleSave = async (values) => {
     console.log("Updated expense data:", values);
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/expense/update-expense/${expenseId}`,
+        values
+      );
+      console.log(response);
+      message.success("Expense Updated");
+      navigate(`/user/dashboard/${id}`);
+    } catch (error) {
+      message.error(error.message);
+    }
     setIsEditing(false);
     form.resetFields();
   };
 
+  const [expenseData, setExpenseData] = useState(null)
+  useEffect(() => {
+    const getExpense = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/expense/get-expense/${expenseId}`
+        );
+        const { removeId, ...expenseData } = response.data.expense;
+
+        setExpenseData(expenseData);
+      } catch (error) {
+          message.error('Error fecthing data');
+      }
+    };
+    getExpense();
+  }, []);
+  if (expenseData === null) return null;
   return (
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-          Edit Expense
-        </Divider>
-      <div className="edit-user-details-container" style={{ marginTop: "20px" }}>
+        Edit Expense
+      </Divider>
+      <div
+        className="edit-user-details-container"
+        style={{ marginTop: "20px" }}
+      >
         <Form
           form={form}
           onFinish={handleSave}
@@ -46,7 +85,7 @@ const EditExpenses = ({ expenseData }) => {
                 name="name"
                 rules={[{ required: true, message: "Please enter a name!" }]}
               >
-                <Input disabled={!isEditing} prefix={<EditOutlined/>}/>
+                <Input disabled={!isEditing} prefix={<EditOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
@@ -55,7 +94,7 @@ const EditExpenses = ({ expenseData }) => {
                 name="amount"
                 rules={[{ required: true, message: "Please enter an amount!" }]}
               >
-                <Input disabled={!isEditing} prefix={<NumberOutlined/>}/>
+                <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
@@ -65,9 +104,13 @@ const EditExpenses = ({ expenseData }) => {
                 rules={[{ required: true, message: "Please select a type!" }]}
               >
                 <Select disabled={!isEditing}>
-                  <Option value="regular">Regular</Option>
-                  <Option value="one-time">One-Time</Option>
-                  <Option value="passive">Passive</Option>
+                  <Option value="groceries">Groceries</Option>
+                  <Option value="entertainment">Entertainment</Option>
+                  <Option value="utilities">Utilities</Option>
+                  <Option value="transportation">Transportation</Option>
+                  <Option value="medical">Medical</Option>
+                  <Option value="education">Education</Option>
+                  <Option value="other">Other</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -75,9 +118,15 @@ const EditExpenses = ({ expenseData }) => {
               <Form.Item
                 label="Expense Date"
                 name="expenseDate"
-                rules={[{ required: true, message: "Please select an expense date!" }]}
+                rules={[
+                  { required: true, message: "Please select an expense date!" },
+                ]}
               >
-                <Input type="date" disabled={!isEditing} prefix={<EditOutlined/>}/>
+                <Input
+                  type="date"
+                  disabled={!isEditing}
+                  prefix={<EditOutlined />}
+                />
               </Form.Item>
             </Col>
             <Col span={24} className="edit-user-details-btn-container">

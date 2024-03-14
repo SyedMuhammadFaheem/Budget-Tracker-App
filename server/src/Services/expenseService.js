@@ -1,13 +1,16 @@
 const appDataSource = require("../config/db");
+const moment = require('moment')
 
-const createExpense = async (name, amount, type, expenseDate) => {
-  try {
+const createExpense = async (id, name, amount, type, expenseDate) => {
+    try {
+       const spentById=Number(id)
     const expense = appDataSource.getRepository("Expense");
     const expenseObj = {
       name: name,
       amount: amount,
       type: type,
       expenseDate: expenseDate,
+        spentBy: { id: spentById },
     };
     await expense.save(expenseObj);
     const createdExpense = await expense
@@ -60,4 +63,17 @@ const deleteExpense = async (id) => {
   }
 };
 
-module.exports = { createExpense, updateExpense, deleteExpense };
+const getExpense = async (id) => {
+  try {
+    id = Number(id);
+    const expense = await appDataSource
+      .getRepository("Expense")
+      .findOneBy({ id: id });
+      if (!expense) return new Error("Expense doesn't exist!");
+    return expense;
+  } catch (error) {
+    return error;
+  }
+};
+
+module.exports = { createExpense, updateExpense, deleteExpense, getExpense };

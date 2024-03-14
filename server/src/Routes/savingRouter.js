@@ -3,7 +3,8 @@ const savingRouter = express.Router();
 const savingController = require("../Controllers/savingController");
 
 
-savingRouter.post('/create-saving',savingController.createSaving)
+savingRouter.get('/get-saving/:id',savingController.getSaving)
+savingRouter.post('/create-saving/:id',savingController.createSaving)
 savingRouter.put('/update-saving/:id',savingController.updateSaving)
 savingRouter.delete('/delete-saving/:id', savingController.deleteSaving)
 

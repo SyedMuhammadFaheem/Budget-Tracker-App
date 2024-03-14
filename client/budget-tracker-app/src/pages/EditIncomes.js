@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Divider, message } from "antd";
+import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
 import {
   NumberOutlined,
   EditOutlined,
@@ -10,16 +10,17 @@ import "../styles/EditUserDetails.css";
 import axios from "axios";
 import Navbar from "./Navbar";
 import { useNavigate, useParams } from "react-router-dom";
+const { Option } = Select;
 
-function EditSavings() {
+function EditIncomes() {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { id, savingId } = useParams();
+  const { id, incomeId } = useParams();
   const navigate = useNavigate();
 
   const handleEdit = () => {
     setIsEditing(true);
-    form.setFieldsValue(savingData);
+    form.setFieldsValue(incomeData);
   };
 
   const handleCancel = () => {
@@ -28,45 +29,44 @@ function EditSavings() {
   };
 
   const handleSave = async (values) => {
-    console.log("Updated saving data:", values);
+    console.log("Updated income data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/saving/update-saving/${savingId}`,
+        `http://localhost:3001/income/update-income/${incomeId}`,
         values
       );
       console.log(response);
-      message.success("Saving Updated");
+      message.success("Income Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
     }
     setIsEditing(false);
     form.resetFields();
-  };
-
-  const [savingData, setSavingData] = useState(null);
+    };
+    
+    const [incomeData, setIncomeData] = useState(null)
   useEffect(() => {
-    const getSaving = async () => {
+    const getIncome = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/saving/get-saving/${savingId}`
+          `http://localhost:3001/income/get-income/${incomeId}`
         );
-        const { removeId, ...savingData } = response.data.saving;
+        const { removeId, ...incomeData } = response.data.income;
 
-        setSavingData(savingData);
+        setIncomeData(incomeData);
       } catch (error) {
-        message.error("Error fecthing data");
+          message.error('Error fecthing data');
       }
     };
-    getSaving();
+    getIncome();
   }, []);
-
-  if (savingData === null) return null;
+  if (incomeData === null) return null;
   return (
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Edit Saving
+        Edit Income
       </Divider>
       <div
         className="edit-user-details-container"
@@ -76,7 +76,7 @@ function EditSavings() {
           form={form}
           onFinish={handleSave}
           layout="vertical"
-          initialValues={savingData}
+          initialValues={incomeData}
         >
           <Row gutter={[16, 16]} justify="center">
             <Col span={24}>
@@ -90,20 +90,33 @@ function EditSavings() {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Target Amount"
-                name="targetAmount"
-                rules={[
-                  { required: true, message: "Please enter a target amount!" },
-                ]}
+                label="Amount"
+                name="amount"
+                rules={[{ required: true, message: "Please enter an amount!" }]}
               >
                 <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Deadline"
-                name="deadline"
-                rules={[{ required: true, message: "Please select deadline!" }]}
+                label="Type"
+                name="type"
+                rules={[{ required: true, message: "Please select a type!" }]}
+              >
+                <Select disabled={!isEditing}>
+                  <Option value="regular">Regular</Option>
+                  <Option value="one-time">One-Time</Option>
+                  <Option value="passive">Passive</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Received Date"
+                name="receivedDate"
+                rules={[
+                  { required: true, message: "Please select a received date!" },
+                ]}
               >
                 <Input
                   type="date"
@@ -128,7 +141,7 @@ function EditSavings() {
                 </div>
               ) : (
                 <Button type="primary" onClick={handleEdit}>
-                  Edit Saving
+                  Edit Income
                 </Button>
               )}
             </Col>
@@ -139,4 +152,4 @@ function EditSavings() {
   );
 }
 
-export default EditSavings;
+export default EditIncomes;

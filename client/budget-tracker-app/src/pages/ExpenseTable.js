@@ -29,22 +29,12 @@ function ExpenseTable() {
       dataIndex: "id",
       key: "id",
       align: "center",
-      sorter: (a, b) => a.id - b.id,
-      filters: null,
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
       align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      filters: [
-        { text: "Online Shopping", value: "Online Shopping" },
-        { text: "Restaurant", value: "Restaurant" },
-        { text: "Salary", value: "Salary" },
-        { text: "Grocery", value: "Grocery" },
-      ],
-      onFilter: (value, record) => record.name.includes(value),
     },
     {
       title: "Amount",
@@ -58,9 +48,17 @@ function ExpenseTable() {
       dataIndex: "type",
       key: "type",
       align: "center",
-      sorter: (a, b) => a.type.localeCompare(b.type),
-      // filters: Object.values(ExpenseType).map((value) => ({ text: value, value })),
-      // onFilter: (value, record) => record.type === value,
+      filters: [
+        { text: "Groceries", value: "groceries" },
+        { text: "Entertainment", value: "entertainment" },
+        { text: "Utilities", value: "utilities" },
+        { text: "Transportation", value: "transportation" },
+        { text: "Medical", value: "medical" },
+        { text: "Education", value: "education" },
+        { text: "Other", value: "other" },
+        ],
+        
+      onFilter: (value, record) => record.type === value,
     },
     {
       title: "Expense Date",
@@ -77,7 +75,8 @@ function ExpenseTable() {
         <span>
           <Button
             type="link"
-            icon={<DeleteOutlined style={{ color: "#f5222d" }} />}
+                  icon={<DeleteOutlined />}
+                  onClick={() => deleteExpense(record.id)}
           />
           <Button
             type="link"
@@ -93,10 +92,21 @@ function ExpenseTable() {
     navigate(`/user/add-new-expense/${id}`);
   };
 
-  const editExpense = (id) => {
-      console.log(id);
-      navigate(`/user/edit-expenses/${id}`)
-  };
+  const editExpense = (expenseId) => {
+      console.log(expenseId);
+      navigate(`/user/edit-expenses/${id}/${expenseId}`);
+    };
+    
+    const deleteExpense = async (expenseId) => {
+        try {
+            const response = await axios.delete(`http://localhost:3001/expense/delete-expense/${expenseId}`)
+            console.log(response.data)
+            message.success("Expense deleted")
+            window.location.reload()
+        } catch (error) {
+            message.error("Error in deleting expense")
+        }
+    }
 
   return (
     <>

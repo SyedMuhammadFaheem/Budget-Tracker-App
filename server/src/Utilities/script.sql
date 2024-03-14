@@ -17,14 +17,14 @@ VALUES
 
 INSERT INTO expenses (name, amount, type, "expenseDate", "spentById") 
 VALUES 
-('Online Shopping', 50.00, 1, '2024-03-11', 1),
-('Restaurant', 30.00, 2, '2024-03-10', 1),
-('Rent', 500.00, 3, '2024-03-05', 2),
-('Transportation', 20.00, 4, '2024-03-02', 2);
+('Online Shopping', 50.00, 'groceries', '2024-03-11', 1),
+('Restaurant', 30.00, 'entertainment', '2024-03-10', 1),
+('Rent', 500.00, 'utilities', '2024-03-05', 2),
+('Transportation', 20.00, 'transportation', '2024-03-02', 2);
 
 
-INSERT INTO savings ("targetAmount", deadline, "savedById") 
+INSERT INTO savings (name,"targetAmount", deadline, "savedById") 
 VALUES 
-(1000.00, '2024-12-31', 1),
-(2000.00, '2025-01-01', 2);
+('Vacation',1000.00, '2024-12-31', 1),
+('Home', 2000.00, '2025-01-01', 2);
 

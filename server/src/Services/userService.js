@@ -58,18 +58,20 @@ const getNumbers = async (id) => {
   try {
     id = Number(id);
     const user = appDataSource.getRepository("User");
-    const numbers = await user
+    const incomeNumbers = await user
       .createQueryBuilder("user")
       .innerJoin("user.incomes", "income", "income.earned = user.id")
-      .innerJoin("user.expenses", "expense", "expense.spentBy = user.id")
-      .innerJoin("user.savings", "saving", "saving.savedBy = user.id")
       .select([
-        "SUM(income.amount) AS income_amount",
-        "SUM(expense.amount) AS expense_amount",
-        "SUM(saving.targetAmount) AS saving_amount",
+        "SUM(income.amount) AS income_amount"
       ])
-      .where("user.id = :id", { id: id })
-      .getRawOne();
+      .where("user.id = :id", { id: id }).getRawOne()
+      const expenseNumbers = await user
+      .createQueryBuilder("user")
+      .innerJoin("user.expenses", "expense", "expense.spentBy = user.id")
+      .select([
+        "SUM(expense.amount) AS expense_amount"
+      ])
+      .where("user.id = :id", { id: id }).getRawOne()
     const userDetails = await user
       .createQueryBuilder("user")
       .select(["user.balance AS balance", "user.name AS name"])
@@ -77,7 +79,8 @@ const getNumbers = async (id) => {
       .getRawOne();
     const res = {
       ...userDetails,
-      ...numbers,
+      ...incomeNumbers,
+      ...expenseNumbers,
     };
     return res;
   } catch (error) {
@@ -131,7 +134,7 @@ const getSaving = async (id) => {
     const income = await user
       .createQueryBuilder("user")
       .innerJoin("user.savings", "saving", "saving.savedBy = user.id")
-      .select(["saving.id, saving.targetAmount, saving.deadline "])
+      .select(["saving.id, saving.name, saving.targetAmount, saving.deadline "])
       .where("user.id = :id", { id: id })
       .getRawMany();
 

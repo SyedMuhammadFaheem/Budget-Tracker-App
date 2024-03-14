@@ -29,8 +29,12 @@ function SavingTable() {
       dataIndex: "id",
       key: "id",
       align: "center",
-      sorter: (a, b) => a.id - b.id,
-      filters: null,
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      align: "center",
     },
     {
       title: "Target Amount",
@@ -54,7 +58,8 @@ function SavingTable() {
         <span>
           <Button
             type="link"
-            icon={<DeleteOutlined style={{ color: "#f5222d" }} />}
+            icon={<DeleteOutlined />}
+            onClick={() => deleteSaving(record.id)}
           />
           <Button
             type="link"
@@ -67,14 +72,25 @@ function SavingTable() {
   ];
 
   const addNewSaving = () => {
-    navigate(`/user/add-new-expense/${id}`);
+    navigate(`/user/add-new-saving/${id}`);
   };
 
-  const editSaving = (id) => {
-    console.log(id);
-    navigate(`/user/edit-savings/${id}`);
+  const editSaving = (savingId) => {
+    console.log(savingId);
+    navigate(`/user/edit-savings/${id}/${savingId}`);
   };
 
+  const deleteSaving = async (savingId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3001/saving/delete-saving/${savingId}`
+      );
+      message.success("Saving deleted");
+      window.location.reload();
+    } catch (error) {
+      message.error("Error in deleting saving");
+    }
+  };
   return (
     <>
       <Button
@@ -92,7 +108,7 @@ function SavingTable() {
           padding: "0 12px",
         }}
       >
-        Add New Expense
+        Add New Saving
       </Button>
       <Table columns={savingColumns} dataSource={data} pagination={false} />
     </>
