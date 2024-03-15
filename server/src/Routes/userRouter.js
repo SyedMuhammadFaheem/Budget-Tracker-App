@@ -11,6 +11,7 @@ userRouter.put('/update-user-details/:id', userController.updateUserDetails)
 
 //cards
 userRouter.get('/get-numbers/:id', userController.getNumbers)
+userRouter.get('/get-numbers-month/:id', userController.getNumbersMonth)
 
 //tables
 userRouter.get('/get-income/:id',userController.getIncome)

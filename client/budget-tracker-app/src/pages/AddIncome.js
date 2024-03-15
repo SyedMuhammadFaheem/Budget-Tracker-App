@@ -22,10 +22,12 @@ const AddIncome = () => {
         values
       );
       console.log(response.data);
+      if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Income created successfully");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
-      message.error("Error creating income!");
+      message.error(error.message);
     }
     form.resetFields();
   };

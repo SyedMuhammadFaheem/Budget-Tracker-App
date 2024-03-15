@@ -9,7 +9,7 @@ const getPassword = async (req, res) => {
     if (!result) throw new Error("User not found!");
     res.status(200).json({ password: result.password });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -21,7 +21,7 @@ const getUserDetails = async (req, res) => {
     if (!result) throw new Error("User not found!");
     res.status(200).json({ user: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -41,7 +41,7 @@ const updateUserDetails = async (req, res) => {
     if (!result) throw new Error("User not updated!");
     res.status(201).json({ user: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -53,7 +53,7 @@ const getNumbers = async (req, res) => {
     if (!result) throw new Error("Error fetching numbers for user!");
     res.status(200).json({ numbers: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -65,7 +65,7 @@ const getIncome = async (req, res) => {
     if (!result) throw new Error("Error fetching incomes!");
     res.status(200).json({ income: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -77,7 +77,7 @@ const getExpense = async (req, res) => {
     if (!result) throw new Error("Error fetching expenses!");
     res.status(200).json({ expense: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -89,7 +89,19 @@ const getSaving = async (req, res) => {
     if (!result) throw new Error("Error fetching savings!");
     res.status(200).json({ saving: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
+  }
+};
+
+const getNumbersMonth = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await userService.getNumbersMonth(id);
+    console.log("res", result);
+    if (!result) throw new Error("Error fetching numbers for this month for user!");
+    res.status(200).json({ numbers: result });
+  } catch (error) {
+    res.send({ error: error.message });
   }
 };
 
@@ -100,5 +112,6 @@ module.exports = {
   getNumbers,
   getIncome,
   getExpense,
-  getSaving
+  getSaving,
+  getNumbersMonth
 };

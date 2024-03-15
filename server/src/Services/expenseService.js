@@ -19,7 +19,7 @@ const createExpense = async (id, name, amount, type, expenseDate) => {
       .getOne();
     return createdExpense;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -29,7 +29,7 @@ const updateExpense = async (id, name, amount, type, expenseDate) => {
     const expense = await appDataSource
       .getRepository("Expense")
       .findOneBy({ id: id });
-    if (!expense) return new Error("Expense doesn't exist!");
+    if (!expense) throw new Error("Expense doesn't exist!");
     await appDataSource.getRepository("Expense").update(
       { id: id },
       {
@@ -44,7 +44,7 @@ const updateExpense = async (id, name, amount, type, expenseDate) => {
       .findOneBy({ id: id });
     return updatedExpense;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -54,12 +54,12 @@ const deleteExpense = async (id) => {
     const expense = await appDataSource
       .getRepository("Expense")
       .findOneBy({ id: id });
-    if (!expense) return new Error("Expense doesn't exist!");
+    if (!expense) throw new Error("Expense doesn't exist!");
     const returnExpense = expense;
     await appDataSource.getRepository("Expense").remove(expense);
     return returnExpense;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -69,10 +69,10 @@ const getExpense = async (id) => {
     const expense = await appDataSource
       .getRepository("Expense")
       .findOneBy({ id: id });
-      if (!expense) return new Error("Expense doesn't exist!");
+      if (!expense) throw new Error("Expense doesn't exist!");
     return expense;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 

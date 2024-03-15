@@ -15,7 +15,7 @@ const createExpense = async (req, res) => {
     if (!result) throw new Error("Error creating expenses!");
     res.status(201).json({ expense: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ const updateExpense = async (req, res) => {
     if (!result) throw new Error("Error updating expenses!");
     res.status(201).json({ updatedExpense: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -46,7 +46,7 @@ const deleteExpense = async (req, res) => {
     if (!result) throw new Error("Error deleting expenses!");
     res.status(204).json({ deletedExpense: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -58,7 +58,7 @@ const getExpense = async (req, res) => {
     if (!result) throw new Error("Error fetching expenses!");
     res.status(200).json({ expense: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 

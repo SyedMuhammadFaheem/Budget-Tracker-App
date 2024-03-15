@@ -17,7 +17,7 @@ const createSaving = async (id, name, targetAmount, deadline) => {
       .getOne();
     return createdSaving;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -27,7 +27,7 @@ const updateSaving = async (id,name, targetAmount, deadline) => {
     const saving = await appDataSource
       .getRepository("Saving")
       .findOneBy({ id: id });
-    if (!saving) return new Error("Saving doesn't exist!");
+    if (!saving) throw new Error("Saving doesn't exist!");
     await appDataSource.getRepository("Saving").update(
       { id: id },
         {
@@ -41,7 +41,7 @@ const updateSaving = async (id,name, targetAmount, deadline) => {
       .findOneBy({ id: id });
     return updatedSaving;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -51,12 +51,12 @@ const deleteSaving = async (id) => {
     const saving = await appDataSource
       .getRepository("Saving")
       .findOneBy({ id: id });
-    if (!saving) return new Error("Saving doesn't exist!");
+    if (!saving) throw new Error("Saving doesn't exist!");
     const returnSaving = saving;
     await appDataSource.getRepository("Saving").remove(saving);
     return returnSaving;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -66,10 +66,10 @@ const getSaving = async (id) => {
     const saving = await appDataSource
       .getRepository("Saving")
       .findOneBy({ id: id });
-    if (!saving) return new Error("Saving doesn't exist!");
+    if (!saving) throw new Error("Saving doesn't exist!");
     return saving;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 

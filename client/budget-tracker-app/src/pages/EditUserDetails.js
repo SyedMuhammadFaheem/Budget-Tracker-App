@@ -35,7 +35,10 @@ const EditUserDetails = () => {
       const response = await axios.put(
         `http://localhost:3001/user/update-user-details/${id}`, values
         );
-        console.log(response)
+      console.log(response)
+      if (response.data.error)
+        throw new Error(response.data.error)
+
         message.success('User Updated')
         navigate(`/user/dashboard/${id}`)
     } catch (error) {
@@ -50,15 +53,17 @@ const EditUserDetails = () => {
         const response = await axios.get(
           `http://localhost:3001/user/get-user-details/${id}`
         );
+        if (response.data.error)
+        throw new Error(response.data.error)
         const { removeId, ...userData } = response.data.user;
 
         setUserData(userData);
       } catch (error) {
-          message.error('Error fecthing data');
+          message.error(error.message);
       }
     };
     getUserDetails();
-  }, []);
+  },[]);
 
   if (userData === null) return null;
   return (

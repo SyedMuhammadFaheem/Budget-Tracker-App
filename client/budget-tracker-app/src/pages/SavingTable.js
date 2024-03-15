@@ -14,15 +14,17 @@ function SavingTable() {
         const response = await axios.get(
           `http://localhost:3001/user/get-saving/${id}`
         );
-        console.log(response.data);
+          console.log(response.data);
+          if (response.data.error)
+        throw new Error(response.data.error)
         const { saving } = response.data;
         setData(saving);
       } catch (error) {
-        message.error("Error fetching savings!");
+        message.error(error.message);
       }
     };
     getSaving();
-  }, []);
+  },[]);
   const savingColumns = [
     {
       title: "ID",
@@ -84,11 +86,14 @@ function SavingTable() {
     try {
       const response = await axios.delete(
         `http://localhost:3001/saving/delete-saving/${savingId}`
-      );
+        );
+        console.log(response.data)
+        if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Saving deleted");
       window.location.reload();
     } catch (error) {
-      message.error("Error in deleting saving");
+      message.error(error.message);
     }
   };
   return (

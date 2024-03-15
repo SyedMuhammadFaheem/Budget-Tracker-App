@@ -6,10 +6,10 @@ const getPassword = async (id) => {
       .getRepository("User")
       .findOneBy({ id: id });
     console.log("pass", user);
-    if (!user) return new Error("User doesn't exist!");
+    if (!user) throw new Error("User doesn't exist!");
     return user;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -19,10 +19,10 @@ const getUserDetails = async (id) => {
     const user = await appDataSource
       .getRepository("User")
       .findOneBy({ id: id });
-    if (!user) return new Error("User doesn't exist!");
+    if (!user) throw new Error("User doesn't exist!");
     return user;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -34,7 +34,7 @@ const updateUserDetails = async (id, name, email, password, role, balance) => {
     const user = await appDataSource
       .getRepository("User")
       .findOneBy({ id: id });
-    if (!user) return new Error("User doesn't exist!");
+    if (!user) throw new Error("User doesn't exist!");
     await appDataSource.getRepository("User").update(
       { id: id },
       {
@@ -50,7 +50,7 @@ const updateUserDetails = async (id, name, email, password, role, balance) => {
       .findOneBy({ id: id });
     return updatedUser;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -74,7 +74,44 @@ const getNumbers = async (id) => {
       .where("user.id = :id", { id: id }).getRawOne()
     const userDetails = await user
       .createQueryBuilder("user")
-      .select(["user.balance AS balance", "user.name AS name"])
+      .select(["user.name AS name"])
+      .where("user.id = :id", { id: id })
+      .getRawOne();
+    const res = {
+      ...userDetails,
+      ...incomeNumbers,
+      ...expenseNumbers,
+    };
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+
+const getNumbersMonth = async (id) => {
+  try {
+    id = Number(id);
+    const user = appDataSource.getRepository("User");
+    const incomeNumbers = await user
+      .createQueryBuilder("user")
+      .innerJoin("user.incomes", "income", "income.earned = user.id")
+      .select([
+        "SUM(income.amount) AS income_amount"
+      ])
+      .where("user.id = :id", { id: id }).andWhere("DATE_TRUNC('month', income.receivedDate) = DATE_TRUNC('month', CURRENT_DATE)")
+      .getRawOne();
+      const expenseNumbers = await user
+      .createQueryBuilder("user")
+      .innerJoin("user.expenses", "expense", "expense.spentBy = user.id")
+      .select([
+        "SUM(expense.amount) AS expense_amount"
+      ])
+      .where("user.id = :id", { id: id }).andWhere("DATE_TRUNC('month', expense.expenseDate) = DATE_TRUNC('month', CURRENT_DATE)")
+      .getRawOne();
+    const userDetails = await user
+      .createQueryBuilder("user")
+      .select([ "user.name AS name"])
       .where("user.id = :id", { id: id })
       .getRawOne();
     const res = {
@@ -103,9 +140,12 @@ const getIncome = async (id) => {
 
     return income;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
+
+
+
 
 const getExpense = async (id) => {
   try {
@@ -122,7 +162,7 @@ const getExpense = async (id) => {
 
     return income;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -140,7 +180,7 @@ const getSaving = async (id) => {
 
     return income;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -151,5 +191,6 @@ module.exports = {
   getNumbers,
   getIncome,
   getExpense,
-  getSaving
+  getSaving,
+  getNumbersMonth
 };

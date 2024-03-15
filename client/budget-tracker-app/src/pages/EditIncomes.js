@@ -35,7 +35,9 @@ function EditIncomes() {
         `http://localhost:3001/income/update-income/${incomeId}`,
         values
       );
-      console.log(response);
+        console.log(response);
+        if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Income Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
@@ -51,16 +53,18 @@ function EditIncomes() {
       try {
         const response = await axios.get(
           `http://localhost:3001/income/get-income/${incomeId}`
-        );
+          );
+          if (response.data.error)
+        throw new Error(response.data.error)
         const { removeId, ...incomeData } = response.data.income;
 
         setIncomeData(incomeData);
       } catch (error) {
-          message.error('Error fecthing data');
+          message.error(error.message);
       }
     };
     getIncome();
-  }, []);
+  },[]);
   if (incomeData === null) return null;
   return (
     <>

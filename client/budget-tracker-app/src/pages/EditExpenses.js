@@ -36,6 +36,8 @@ const EditExpenses = () => {
         values
       );
       console.log(response);
+      if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Expense Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
@@ -52,15 +54,17 @@ const EditExpenses = () => {
         const response = await axios.get(
           `http://localhost:3001/expense/get-expense/${expenseId}`
         );
+        if (response.data.error)
+        throw new Error(response.data.error)
         const { removeId, ...expenseData } = response.data.expense;
 
         setExpenseData(expenseData);
       } catch (error) {
-          message.error('Error fecthing data');
+          message.error(error.message);
       }
     };
     getExpense();
-  }, []);
+  },[]);
   if (expenseData === null) return null;
   return (
     <>

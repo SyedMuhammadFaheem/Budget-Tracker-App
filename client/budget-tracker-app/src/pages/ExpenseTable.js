@@ -13,16 +13,19 @@ function ExpenseTable() {
       try {
         const response = await axios.get(
           `http://localhost:3001/user/get-expense/${id}`
-        );
-        console.log(response.data);
+          );
+          
+          console.log(response.data);
+          if (response.data.error)
+        throw new Error(response.data.error)
         const { expense } = response.data;
         setData(expense);
       } catch (error) {
-        message.error("Error fetching expenses!");
+        message.error(error.message);
       }
     };
     getExpense();
-  }, []);
+  },[]);
   const expenseColumns = [
     {
       title: "ID",
@@ -101,10 +104,12 @@ function ExpenseTable() {
         try {
             const response = await axios.delete(`http://localhost:3001/expense/delete-expense/${expenseId}`)
             console.log(response.data)
+            if (response.data.error)
+        throw new Error(response.data.error)
             message.success("Expense deleted")
             window.location.reload()
         } catch (error) {
-            message.error("Error in deleting expense")
+            message.error(error.message)
         }
     }
 

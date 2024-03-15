@@ -11,6 +11,8 @@ import AddIncome from "./pages/AddIncome";
 import EditSavings from "./pages/EditSavings";
 import AddSaving from "./pages/AddSaving";
 import EditIncomes from "./pages/EditIncomes";
+import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 function Router() {
   return (
@@ -31,6 +33,8 @@ function Router() {
           </Route>
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/signup" element={<Signup />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -13,10 +13,12 @@ function IncomeTable() {
             try {
                 const response = await axios.get(`http://localhost:3001/user/get-income/${id}`)
                 console.log(response.data)
+                if (response.data.error)
+        throw new Error(response.data.error)
                 const { income } = response.data
                 setData(income)
             } catch (error) {
-                message.error('Error fetching incomes!')
+                message.error(error.message)
             }
         }
         getIncome()
@@ -96,11 +98,12 @@ function IncomeTable() {
         try {
             const response = await axios.delete(`http://localhost:3001/income/delete-income/${incomeId}`)
             console.log(response.data)
-            
+            if (response.data.error)
+        throw new Error(response.data.error)
             message.success("Income deleted")
             window.location.reload()
         } catch (error) {
-            message.error("Error in deleting income")
+            message.error(error.message)
         }
     }
 

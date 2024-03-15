@@ -10,7 +10,7 @@ const login = async (req, res) => {
       .status(201)
       .send({ user: result, message: "User signed in successfully!" });
   } catch (error) {
-    res.status(501).send({ error: error });
+    res.send({ error: error.message });
   }
 };
 const signup = async (req, res) => {
@@ -22,7 +22,7 @@ const signup = async (req, res) => {
       .status(201)
       .send({ user: result, message: "User signed up successfully!" });
   } catch (error) {
-    res.status(501).send({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -42,7 +42,7 @@ const google = async (req, res) => {
       .status(201)
       .send({ user: result, message: "User signed up successfully!" });
   } catch (error) {
-    res.status(501).send({ error: error });
+    res.send({ error: error.message });
   }
 };
 

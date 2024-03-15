@@ -34,7 +34,9 @@ function EditSavings() {
         `http://localhost:3001/saving/update-saving/${savingId}`,
         values
       );
-      console.log(response);
+        console.log(response);
+        if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Saving Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
@@ -50,16 +52,18 @@ function EditSavings() {
       try {
         const response = await axios.get(
           `http://localhost:3001/saving/get-saving/${savingId}`
-        );
+          );
+          if (response.data.error)
+        throw new Error(response.data.error)
         const { removeId, ...savingData } = response.data.saving;
 
         setSavingData(savingData);
       } catch (error) {
-        message.error("Error fecthing data");
+        message.error(error.message);
       }
     };
     getSaving();
-  }, []);
+  },[]);
 
   if (savingData === null) return null;
   return (

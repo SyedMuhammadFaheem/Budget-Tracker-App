@@ -45,13 +45,15 @@ function Signup() {
         values
       );
       console.log(response.data);
+      if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Signup Success!");
       form.resetFields();
       const cookie= `${response.data.user.id}:${response.data.user.password}`
       Cookies.set('user',cookie)
       navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
-      message.error(error);
+      message.error(error.message);
     }
   };
   const responseGoogleFailure = (response) => {
@@ -76,13 +78,15 @@ function Signup() {
         data
       );
       console.log(response.data);
+      if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Signup Success!");
       form.resetFields();
       const cookie= `${response.data.user.id}:${response.data.user.password}`
       Cookies.set('user',cookie)
       navigate(`/user/dashboard/${response.data.user.id}`)
     } catch (error) {
-      message.error(error);
+      message.error(error.message);
     }
   };
 

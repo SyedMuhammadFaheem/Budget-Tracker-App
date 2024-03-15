@@ -20,10 +20,12 @@ const AddExpense = () => {
         values
       );
       console.log(response.data);
+      if (response.data.error)
+        throw new Error(response.data.error)
       message.success("Expense created successfully");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
-      message.error("Error creating expense!");
+      message.error(error.message);
     }
     form.resetFields();
   };

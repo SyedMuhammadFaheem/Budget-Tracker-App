@@ -9,7 +9,7 @@ const createSaving = async (req, res) => {
     if (!result) throw new Error("Error creating savings!");
     res.status(201).json({ saving: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -22,7 +22,7 @@ const updateSaving = async (req, res) => {
     if (!result) throw new Error("Error updating savings!");
     res.status(201).json({ updatedSaving: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ const deleteSaving = async (req, res) => {
     if (!result) throw new Error("Error deleting savings!");
     res.status(204).json({ deletedSaving: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 
@@ -46,7 +46,7 @@ const getSaving = async (req, res) => {
     if (!result) throw new Error("Error fetching savings!");
     res.status(200).json({ saving: result });
   } catch (error) {
-    res.status(501).json({ error: error });
+    res.send({ error: error.message });
   }
 };
 

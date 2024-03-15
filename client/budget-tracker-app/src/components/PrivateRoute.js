@@ -10,7 +10,7 @@ function PrivateRoute() {
     const fetchData = async () => {
       const user = Cookies.get("user");
       if (user) {
-        const [blankId, pass] = user.split(":");
+        const [ , pass] = user.split(":");
         const data = {
           id: id,
         };
@@ -35,7 +35,7 @@ function PrivateRoute() {
     };
 
     fetchData();
-  }, []);
+  });
 
   if (auth === null) {
     return null;

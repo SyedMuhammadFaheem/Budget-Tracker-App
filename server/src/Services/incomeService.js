@@ -18,7 +18,7 @@ const createIncome = async (id, name, amount, type, receivedDate) => {
       .getOne();
     return createdIncome;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -28,7 +28,7 @@ const updateIncome = async (id, name, amount, type, receivedDate) => {
     const income = await appDataSource
       .getRepository("Income")
       .findOneBy({ id: id });
-    if (!income) return new Error("Income doesn't exist!");
+    if (!income) throw new Error("Income doesn't exist!");
     await appDataSource.getRepository("Income").update(
       { id: id },
       {
@@ -43,7 +43,7 @@ const updateIncome = async (id, name, amount, type, receivedDate) => {
       .findOneBy({ id: id });
     return updatedIncome;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -53,12 +53,12 @@ const deleteIncome = async (id) => {
     const income = await appDataSource
       .getRepository("Income")
       .findOneBy({ id: id });
-    if (!income) return new Error("Income doesn't exist!");
+    if (!income) throw new Error("Income doesn't exist!");
     const returnIncome = income;
     await appDataSource.getRepository("Income").remove(income);
     return returnIncome;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
@@ -68,10 +68,10 @@ const getIncome = async (id) => {
     const income = await appDataSource
       .getRepository("Income")
       .findOneBy({ id: id });
-    if (!income) return new Error("Income doesn't exist!");
+    if (!income) throw new Error("Income doesn't exist!");
     return income;
   } catch (error) {
-    return error;
+    throw new Error(error.message);
   }
 };
 
