@@ -1,25 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Divider, message } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
 import {
   NumberOutlined,
   EditOutlined,
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import "../styles/EditUserDetails.css";
+import "../../styles/EditUserDetails.css";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 import { useNavigate, useParams } from "react-router-dom";
 
-function EditSavings() {
+const { Option } = Select;
+
+const EditUserDetails = () => {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { id, savingId } = useParams();
-  const navigate = useNavigate();
-
+  const { id } = useParams();
+  const [userData, setUserData] = useState(null);
   const handleEdit = () => {
     setIsEditing(true);
-    form.setFieldsValue(savingData);
+    form.setFieldsValue(userData);
   };
 
   const handleCancel = () => {
@@ -28,49 +30,46 @@ function EditSavings() {
   };
 
   const handleSave = async (values) => {
-    console.log("Updated saving data:", values);
+    console.log("Updated user data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/saving/update-saving/${savingId}`,
+        `http://localhost:3001/user/update-user-details/${id}`,
         values
       );
-        console.log(response);
-        if (response.data.error)
-        throw new Error(response.data.error)
-      message.success("Saving Updated");
+      console.log(response);
+      if (response.data.error) throw new Error(response.data.error);
+
+      message.success("User Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
     }
     setIsEditing(false);
-    form.resetFields();
   };
 
-  const [savingData, setSavingData] = useState(null);
   useEffect(() => {
-    const getSaving = async () => {
+    const getUserDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/saving/get-saving/${savingId}`
-          );
-          if (response.data.error)
-        throw new Error(response.data.error)
-        const { removeId, ...savingData } = response.data.saving;
+          `http://localhost:3001/user/get-user-details/${id}`
+        );
+        if (response.data.error) throw new Error(response.data.error);
+        const { removeId, ...userData } = response.data.user;
 
-        setSavingData(savingData);
+        setUserData(userData);
       } catch (error) {
         message.error(error.message);
       }
     };
-    getSaving();
-  },[]);
+    getUserDetails();
+  }, []);
 
-  if (savingData === null) return null;
+  if (userData === null) return null;
   return (
     <>
-      <Navbar selectedValue="1" />
+      <Navbar name={ userData.name} selectedValue="2" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Edit Saving
+        Edit Profile
       </Divider>
       <div
         className="edit-user-details-container"
@@ -80,7 +79,7 @@ function EditSavings() {
           form={form}
           onFinish={handleSave}
           layout="vertical"
-          initialValues={savingData}
+          initialValues={userData}
         >
           <Row gutter={[16, 16]} justify="center">
             <Col span={24}>
@@ -94,26 +93,51 @@ function EditSavings() {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Target Amount"
-                name="targetAmount"
+                label="Email"
+                name="email"
                 rules={[
-                  { required: true, message: "Please enter a target amount!" },
+                  { required: true, message: "Please enter an email!" },
+                  {
+                    type: "email",
+                    message: "Please enter a valid email address!",
+                  },
                 ]}
               >
-                <Input disabled={!isEditing} prefix={<NumberOutlined />} />
+                <Input disabled={!isEditing} prefix={<EditOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Deadline"
-                name="deadline"
-                rules={[{ required: true, message: "Please select deadline!" }]}
+                label="Password"
+                name="password"
+                rules={[
+                  { required: true, message: "Please enter a password!" },
+                ]}
               >
-                <Input
-                  type="date"
+                <Input.Password
                   disabled={!isEditing}
                   prefix={<EditOutlined />}
                 />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Role"
+                name="role"
+                rules={[{ required: true, message: "Please enter a role!" }]}
+              >
+                <Select disabled={!isEditing}>
+                  <Option value="user">User</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Balance"
+                name="balance"
+                rules={[{ required: true, message: "Please enter a balance!" }]}
+              >
+                <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24} className="edit-user-details-btn-container">
@@ -132,7 +156,7 @@ function EditSavings() {
                 </div>
               ) : (
                 <Button type="primary" onClick={handleEdit}>
-                  Edit Saving
+                  Edit Profile
                 </Button>
               )}
             </Col>
@@ -141,6 +165,6 @@ function EditSavings() {
       </div>
     </>
   );
-}
+};
 
-export default EditSavings;
+export default EditUserDetails;

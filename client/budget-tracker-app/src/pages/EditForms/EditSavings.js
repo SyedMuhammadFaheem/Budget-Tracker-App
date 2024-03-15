@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
+import { Form, Input, Button, Row, Col, Divider, message } from "antd";
 import {
   NumberOutlined,
   EditOutlined,
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import "../styles/EditUserDetails.css";
+import "../../styles/EditUserDetails.css";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-const { Option } = Select;
 
-function EditIncomes() {
+function EditSavings() {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { id, incomeId } = useParams();
+  const { id, savingId } = useParams();
   const navigate = useNavigate();
 
   const handleEdit = () => {
     setIsEditing(true);
-    form.setFieldsValue(incomeData);
+    form.setFieldsValue(savingData);
   };
 
   const handleCancel = () => {
@@ -29,48 +28,47 @@ function EditIncomes() {
   };
 
   const handleSave = async (values) => {
-    console.log("Updated income data:", values);
+    console.log("Updated saving data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/income/update-income/${incomeId}`,
+        `http://localhost:3001/saving/update-saving/${savingId}`,
         values
       );
-        console.log(response);
-        if (response.data.error)
-        throw new Error(response.data.error)
-      message.success("Income Updated");
+      console.log(response);
+      if (response.data.error) throw new Error(response.data.error);
+      message.success("Saving Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
     }
     setIsEditing(false);
     form.resetFields();
-    };
-    
-    const [incomeData, setIncomeData] = useState(null)
+  };
+
+  const [savingData, setSavingData] = useState(null);
   useEffect(() => {
-    const getIncome = async () => {
+    const getSaving = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/income/get-income/${incomeId}`
-          );
-          if (response.data.error)
-        throw new Error(response.data.error)
-        const { removeId, ...incomeData } = response.data.income;
+          `http://localhost:3001/saving/get-saving/${savingId}`
+        );
+        if (response.data.error) throw new Error(response.data.error);
+        const { removeId, ...savingData } = response.data.saving;
 
-        setIncomeData(incomeData);
+        setSavingData(savingData);
       } catch (error) {
-          message.error(error.message);
+        message.error(error.message);
       }
     };
-    getIncome();
-  },[]);
-  if (incomeData === null) return null;
+    getSaving();
+  }, []);
+
+  if (savingData === null) return null;
   return (
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Edit Income
+        Edit Saving
       </Divider>
       <div
         className="edit-user-details-container"
@@ -80,7 +78,7 @@ function EditIncomes() {
           form={form}
           onFinish={handleSave}
           layout="vertical"
-          initialValues={incomeData}
+          initialValues={savingData}
         >
           <Row gutter={[16, 16]} justify="center">
             <Col span={24}>
@@ -94,33 +92,20 @@ function EditIncomes() {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Amount"
-                name="amount"
-                rules={[{ required: true, message: "Please enter an amount!" }]}
+                label="Target Amount"
+                name="targetAmount"
+                rules={[
+                  { required: true, message: "Please enter a target amount!" },
+                ]}
               >
                 <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Type"
-                name="type"
-                rules={[{ required: true, message: "Please select a type!" }]}
-              >
-                <Select disabled={!isEditing}>
-                  <Option value="regular">Regular</Option>
-                  <Option value="one-time">One-Time</Option>
-                  <Option value="passive">Passive</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item
-                label="Received Date"
-                name="receivedDate"
-                rules={[
-                  { required: true, message: "Please select a received date!" },
-                ]}
+                label="Deadline"
+                name="deadline"
+                rules={[{ required: true, message: "Please select deadline!" }]}
               >
                 <Input
                   type="date"
@@ -145,7 +130,7 @@ function EditIncomes() {
                 </div>
               ) : (
                 <Button type="primary" onClick={handleEdit}>
-                  Edit Income
+                  Edit Saving
                 </Button>
               )}
             </Col>
@@ -156,4 +141,4 @@ function EditIncomes() {
   );
 }
 
-export default EditIncomes;
+export default EditSavings;

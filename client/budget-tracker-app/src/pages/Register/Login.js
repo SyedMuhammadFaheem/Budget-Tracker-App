@@ -1,17 +1,11 @@
 import { React, useEffect } from "react";
 import { Button, Form, Grid, Input, theme, Typography, message } from "antd";
-import {
-  LockOutlined,
-  MailOutlined,
-  UserAddOutlined,
-  LockFilled,
-  GoogleOutlined,
-} from "@ant-design/icons";
+import { GoogleOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { GoogleLogin } from "react-google-login";
-import logo from "../images/logo.png";
 import axios from "axios";
-import auth from "../components/auth";
-import backgroundImage from "../images/background.png";
+import logo from "../../images/logo.png";
+import auth from "../../components/auth";
+import backgroundImage from "../../images/background.png";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -19,16 +13,14 @@ const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title, Link } = Typography;
 
-function Signup() {
-  const navigate= useNavigate()
+function Login() {
+  const navigate = useNavigate();
   const { token } = useToken();
   const screens = useBreakpoint();
   const [form] = Form.useForm();
-
   useEffect(() => {
     auth();
   }, []);
-
   const responseGoogleSuccess = async (response) => {
     console.log(response.wt.Ad); //name
     console.log(response.wt.NT); //id
@@ -37,21 +29,20 @@ function Signup() {
       username: response.wt.Ad,
       email: response.wt.cu,
       password: response.wt.NT,
-      googleAuth: true
+      googleAuth: true,
     };
     try {
       const response = await axios.post(
         "http://localhost:3001/user/oauth/register",
         values
       );
-      console.log(response.data);
-      if (response.data.error)
-        throw new Error(response.data.error)
-      message.success("Signup Success!");
+      console.log(response.data.user);
+      if (response.data.error) throw new Error(response.data.error);
+      message.success("Login Success!");
       form.resetFields();
-      const cookie= `${response.data.user.id}:${response.data.user.password}`
-      Cookies.set('user',cookie)
-      navigate(`/user/dashboard/${response.data.user.id}`)
+      const cookie = `${response.data.user.id}:${response.data.user.password}`;
+      Cookies.set("user", cookie);
+      navigate(`/user/dashboard/${response.data.user.id}`);
     } catch (error) {
       message.error(error.message);
     }
@@ -61,34 +52,28 @@ function Signup() {
   };
 
   const onFinish = async (values) => {
+    if (!values) return;
     console.log("Received values of form: ", values);
-    if (values.confirmPassword !== values.password) {
-      message.error("Password and Confirm Password don't match!");
-      form.resetFields();
-      return;
-    }
-    let { confirmPassword, ...data } = values;
-    data={
-      ...data,
-      googleAuth: false
-    }
     try {
       const response = await axios.post(
-        "http://localhost:3001/user/signup",
-        data
+        "http://localhost:3001/user/login",
+        values
       );
       console.log(response.data);
-      if (response.data.error)
-        throw new Error(response.data.error)
-      message.success("Signup Success!");
+      if (response.data.error) throw new Error(response.data.error);
+      message.success("Login Success!");
       form.resetFields();
-      const cookie= `${response.data.user.id}:${response.data.user.password}`
-      Cookies.set('user',cookie)
-      navigate(`/user/dashboard/${response.data.user.id}`)
+      const cookie = `${response.data.user.id}:${response.data.user.password}`;
+      Cookies.set("user", cookie);
+      navigate(`/user/dashboard/${response.data.user.id}`);
     } catch (error) {
       message.error(error.message);
     }
   };
+
+  useEffect(() => {
+    Cookies.remove("user");
+  });
 
   const styles = {
     section: {
@@ -150,43 +135,23 @@ function Signup() {
               style={{ width: "140px", height: "140px" }}
             />
             <Title level={2} style={styles.title}>
-              Sign Up
+              Sign in
             </Title>
             <Text style={styles.text}>
               Welcome back to Budget Tracker App! Please enter your details
-              below to sign up.
+              below to sign in.
             </Text>
           </div>
           <Form
-            form={form}
-            name="signup"
+            name="login"
             initialValues={{
               remember: true,
             }}
+            form={form}
             onFinish={onFinish}
             layout="vertical"
             requiredMark="optional"
           >
-            <Form.Item
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your username properly!",
-                },
-              ]}
-            >
-              <Input
-                prefix={
-                  <UserAddOutlined style={{ color: "rgba(0,0,0,.80)" }} />
-                }
-                type="name"
-                placeholder="John Doe"
-                style={{ borderColor: "#4D4B4B" }}
-                className="place-holder"
-              />
-            </Form.Item>
-
             <Form.Item
               name="email"
               rules={[
@@ -221,26 +186,14 @@ function Signup() {
                 className="place-holder"
               />
             </Form.Item>
-            <Form.Item
-              name="confirmPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your Password Confirmation!",
-                },
-              ]}
-            >
-              <Input.Password
-                prefix={<LockFilled style={{ color: "rgba(0,0,0,.80)" }} />}
-                type="password"
-                placeholder="Confirm Password"
-                style={{ borderColor: "#4D4B4B" }}
-                className="place-holder"
-              />
+            <Form.Item>
+              <a style={{ float: "right" }} href="/user/login">
+                Forgot password?
+              </a>
             </Form.Item>
             <Form.Item style={{ marginBottom: "0px" }}>
               <Button block type="primary" htmlType="submit">
-                Signup
+                Log in
               </Button>
               <GoogleLogin
                 clientId="637568304248-85h5n2gvvjahf6ajralrnn0ab1kcofap.apps.googleusercontent.com"
@@ -260,9 +213,10 @@ function Signup() {
                   </Button>
                 )}
               />
+
               <div style={{ marginTop: "16px", textAlign: "center" }}>
-                <Text>Already have an account? </Text>
-                <Link href="/user/login">Sign in now</Link>
+                <Text>Don't have an account? </Text>
+                <Link href="/user/signup">Sign up now</Link>
               </div>
             </Form.Item>
           </Form>
@@ -273,4 +227,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default Login;

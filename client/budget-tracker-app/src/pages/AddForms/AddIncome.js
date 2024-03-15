@@ -1,28 +1,29 @@
 import React from "react";
 import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
-import Navbar from "./Navbar";
 import { NumberOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
-import "../styles/EditUserDetails.css";
 import axios from "axios";
+import Navbar from "../Navbar";
+import "../../styles/EditUserDetails.css";
 import { useNavigate, useParams } from "react-router-dom";
 
 const { Option } = Select;
 
-const AddExpense = () => {
+const AddIncome = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
+
   const handleSave = async (values) => {
-    console.log("Saved expense data:", values);
+    console.log("Saved income data:", values);
+    console.log(id);
     try {
       const response = await axios.post(
-        `http://localhost:3001/expense/create-expense/${id}`,
+        `http://localhost:3001/income/create-income/${id}`,
         values
       );
       console.log(response.data);
-      if (response.data.error)
-        throw new Error(response.data.error)
-      message.success("Expense created successfully");
+      if (response.data.error) throw new Error(response.data.error);
+      message.success("Income created successfully");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
@@ -34,7 +35,7 @@ const AddExpense = () => {
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Add Expense
+        Add Income
       </Divider>
       <div
         className="edit-user-details-container"
@@ -67,22 +68,18 @@ const AddExpense = () => {
                 rules={[{ required: true, message: "Please select a type!" }]}
               >
                 <Select>
-                  <Option value="groceries">Groceries</Option>
-                  <Option value="entertainment">Entertainment</Option>
-                  <Option value="utilities">Utilities</Option>
-                  <Option value="transportation">Transportation</Option>
-                  <Option value="medical">Medical</Option>
-                  <Option value="education">Education</Option>
-                  <Option value="other">Other</Option>
+                  <Option value="regular">Regular</Option>
+                  <Option value="one-time">One-Time</Option>
+                  <Option value="passive">Passive</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Expense Date"
-                name="expenseDate"
+                label="Received Date"
+                name="receivedDate"
                 rules={[
-                  { required: true, message: "Please select an expense date!" },
+                  { required: true, message: "Please select a received date!" },
                 ]}
               >
                 <Input type="date" prefix={<EditOutlined />} />
@@ -101,4 +98,4 @@ const AddExpense = () => {
   );
 };
 
-export default AddExpense;
+export default AddIncome;

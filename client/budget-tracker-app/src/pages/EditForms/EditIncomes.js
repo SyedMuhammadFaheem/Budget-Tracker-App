@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
 import {
   NumberOutlined,
@@ -6,22 +6,21 @@ import {
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import "../styles/EditUserDetails.css";
+import "../../styles/EditUserDetails.css";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-
 const { Option } = Select;
 
-const EditUserDetails = () => {
-    const navigate= useNavigate()
+function EditIncomes() {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { id } = useParams();
-  const [userData, setUserData] = useState(null);
+  const { id, incomeId } = useParams();
+  const navigate = useNavigate();
+
   const handleEdit = () => {
     setIsEditing(true);
-    form.setFieldsValue(userData);
+    form.setFieldsValue(incomeData);
   };
 
   const handleCancel = () => {
@@ -30,47 +29,46 @@ const EditUserDetails = () => {
   };
 
   const handleSave = async (values) => {
-    console.log("Updated user data:", values);
+    console.log("Updated income data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/user/update-user-details/${id}`, values
-        );
-      console.log(response)
-      if (response.data.error)
-        throw new Error(response.data.error)
-
-        message.success('User Updated')
-        navigate(`/user/dashboard/${id}`)
+        `http://localhost:3001/income/update-income/${incomeId}`,
+        values
+      );
+      console.log(response);
+      if (response.data.error) throw new Error(response.data.error);
+      message.success("Income Updated");
+      navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
     }
     setIsEditing(false);
+    form.resetFields();
   };
 
+  const [incomeData, setIncomeData] = useState(null);
   useEffect(() => {
-    const getUserDetails = async () => {
+    const getIncome = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/user/get-user-details/${id}`
+          `http://localhost:3001/income/get-income/${incomeId}`
         );
-        if (response.data.error)
-        throw new Error(response.data.error)
-        const { removeId, ...userData } = response.data.user;
+        if (response.data.error) throw new Error(response.data.error);
+        const { removeId, ...incomeData } = response.data.income;
 
-        setUserData(userData);
+        setIncomeData(incomeData);
       } catch (error) {
-          message.error(error.message);
+        message.error(error.message);
       }
     };
-    getUserDetails();
-  },[]);
-
-  if (userData === null) return null;
+    getIncome();
+  }, []);
+  if (incomeData === null) return null;
   return (
     <>
-      <Navbar selectedValue="2" />
+      <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Edit Profile
+        Edit Income
       </Divider>
       <div
         className="edit-user-details-container"
@@ -80,7 +78,7 @@ const EditUserDetails = () => {
           form={form}
           onFinish={handleSave}
           layout="vertical"
-          initialValues={userData}
+          initialValues={incomeData}
         >
           <Row gutter={[16, 16]} justify="center">
             <Col span={24}>
@@ -94,51 +92,39 @@ const EditUserDetails = () => {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Please enter an email!" },
-                  {
-                    type: "email",
-                    message: "Please enter a valid email address!",
-                  },
-                ]}
+                label="Amount"
+                name="amount"
+                rules={[{ required: true, message: "Please enter an amount!" }]}
               >
-                <Input disabled={!isEditing} prefix={<EditOutlined />} />
+                <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  { required: true, message: "Please enter a password!" },
-                ]}
-              >
-                <Input.Password
-                  disabled={!isEditing}
-                  prefix={<EditOutlined />}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item
-                label="Role"
-                name="role"
-                rules={[{ required: true, message: "Please enter a role!" }]}
+                label="Type"
+                name="type"
+                rules={[{ required: true, message: "Please select a type!" }]}
               >
                 <Select disabled={!isEditing}>
-                  <Option value="user">User</Option>
+                  <Option value="regular">Regular</Option>
+                  <Option value="one-time">One-Time</Option>
+                  <Option value="passive">Passive</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Balance"
-                name="balance"
-                rules={[{ required: true, message: "Please enter a balance!" }]}
+                label="Received Date"
+                name="receivedDate"
+                rules={[
+                  { required: true, message: "Please select a received date!" },
+                ]}
               >
-                <Input disabled={!isEditing} prefix={<NumberOutlined />} />
+                <Input
+                  type="date"
+                  disabled={!isEditing}
+                  prefix={<EditOutlined />}
+                />
               </Form.Item>
             </Col>
             <Col span={24} className="edit-user-details-btn-container">
@@ -157,7 +143,7 @@ const EditUserDetails = () => {
                 </div>
               ) : (
                 <Button type="primary" onClick={handleEdit}>
-                  Edit Profile
+                  Edit Income
                 </Button>
               )}
             </Col>
@@ -166,6 +152,6 @@ const EditUserDetails = () => {
       </div>
     </>
   );
-};
+}
 
-export default EditUserDetails;
+export default EditIncomes;

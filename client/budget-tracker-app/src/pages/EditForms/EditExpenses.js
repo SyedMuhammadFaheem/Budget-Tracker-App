@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Select, Divider,message } from "antd";
+import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
 import {
   NumberOutlined,
   EditOutlined,
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import "../styles/EditUserDetails.css";
-import Navbar from "./Navbar";
+import "../../styles/EditUserDetails.css";
+import Navbar from "../Navbar";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -36,8 +36,7 @@ const EditExpenses = () => {
         values
       );
       console.log(response);
-      if (response.data.error)
-        throw new Error(response.data.error)
+      if (response.data.error) throw new Error(response.data.error);
       message.success("Expense Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
@@ -47,24 +46,23 @@ const EditExpenses = () => {
     form.resetFields();
   };
 
-  const [expenseData, setExpenseData] = useState(null)
+  const [expenseData, setExpenseData] = useState(null);
   useEffect(() => {
     const getExpense = async () => {
       try {
         const response = await axios.get(
           `http://localhost:3001/expense/get-expense/${expenseId}`
         );
-        if (response.data.error)
-        throw new Error(response.data.error)
+        if (response.data.error) throw new Error(response.data.error);
         const { removeId, ...expenseData } = response.data.expense;
 
         setExpenseData(expenseData);
       } catch (error) {
-          message.error(error.message);
+        message.error(error.message);
       }
     };
     getExpense();
-  },[]);
+  }, []);
   if (expenseData === null) return null;
   return (
     <>

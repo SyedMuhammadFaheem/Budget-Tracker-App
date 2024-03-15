@@ -19,9 +19,10 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import "../styles/Dashboard.css";
-import IncomeTable from "./IncomeTable";
-import ExpenseTable from "./ExpenseTable";
-import SavingTable from "./SavingTable";
+import "../styles/Carousel.css";
+import IncomeTable from "./Tables/IncomeTable";
+import ExpenseTable from "./Tables/ExpenseTable";
+import SavingTable from "./Tables/SavingTable";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
@@ -37,20 +38,19 @@ const Dashboard = () => {
           `http://localhost:3001/user/get-numbers/${id}`
         );
 
-        if (response.data.error)
-        throw new Error(response.data.error)
+        if (response.data.error) throw new Error(response.data.error);
         const { numbers } = response.data;
         setUserName(numbers.name);
         setTotalIncome(parseFloat(numbers.income_amount));
         setTotalExpenses(parseFloat(numbers.expense_amount));
-        
+
         getSaving();
       } catch (error) {
         message.error(error.message);
       }
     };
     getNumbers();
-  },[totalIncome, totalExpenses]);
+  }, [totalIncome, totalExpenses]);
 
   const setSavingCarousel = (saving) => {
     const temp = [];
@@ -59,7 +59,7 @@ const Dashboard = () => {
       const goal = {
         name: saving[i].name,
         savingsPercentage: (
-          ((totalIncome - totalExpenses) / (parseFloat(saving[i].targetAmount))) *
+          ((totalIncome - totalExpenses) / parseFloat(saving[i].targetAmount)) *
           100
         ).toFixed(0),
         isGoalAchieved:
@@ -76,7 +76,7 @@ const Dashboard = () => {
       };
       temp.push(goal);
     }
-    console.log(temp)
+    console.log(temp);
     setSavingGoals(temp);
   };
 
@@ -87,8 +87,7 @@ const Dashboard = () => {
         `http://localhost:3001/user/get-saving/${id}`
       );
       console.log(response.data);
-      if (response.data.error)
-        throw new Error(response.data.error)
+      if (response.data.error) throw new Error(response.data.error);
       const { saving } = response.data;
       setSavingCarousel(saving);
     } catch (error) {
@@ -102,36 +101,48 @@ const Dashboard = () => {
         const response = await axios.get(
           `http://localhost:3001/user/get-numbers-month/${id}`
         );
-  
-        if (response.data.error)
-        throw new Error(response.data.error)
+
+        if (response.data.error) throw new Error(response.data.error);
         const { numbers } = response.data;
         setUserName(numbers.name);
         setTotalIncomeMonth(parseFloat(numbers.income_amount));
         setTotalExpensesMonth(parseFloat(numbers.expense_amount));
-        
       } catch (error) {
         message.error(error.message);
       }
-    }
-    getNumbersMonth()
-  },[])
+    };
+    getNumbersMonth();
+  }, []);
   const incomePercentage = (totalIncome / (totalIncome + totalExpenses)) * 100;
   const expensesPercentage =
     (totalExpenses / (totalIncome + totalExpenses)) * 100;
 
   const { id } = useParams();
 
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-  if(savingGoals==null) return   
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  if (savingGoals == null) return;
   return (
     <>
       <Navbar name={userName} selectedValue="1" />
       <div className="dashboard-container" style={{ marginTop: "15px" }}>
-        <Divider orientation="center" style={{ color: "#1890ff", fontSize: "30px" }}>
-          {monthNames[(new Date()).getMonth()]}, {(new Date()).getFullYear()}
+        <Divider
+          orientation="center"
+          style={{ color: "#1890ff", fontSize: "30px" }}
+        >
+          {monthNames[new Date().getMonth()]}, {new Date().getFullYear()}
         </Divider>
         <Row gutter={[16, 16]} justify="center">
           <Col xs={24} sm={12} md={8} lg={6} xl={6}>
@@ -141,7 +152,7 @@ const Dashboard = () => {
             >
               <Statistic
                 title="Current Balance"
-                value={totalIncome}
+                value={totalIncomeMonth}
                 prefix={<DollarOutlined style={{ fontSize: "24px" }} />}
                 valueStyle={{ fontSize: "24px" }}
                 titleStyle={{ fontWeight: "bold" }}
@@ -155,7 +166,7 @@ const Dashboard = () => {
             >
               <Statistic
                 title="Total Income"
-                value={totalIncome}
+                value={totalIncomeMonth}
                 prefix={<ArrowUpOutlined style={{ fontSize: "24px" }} />}
                 valueStyle={{ fontSize: "24px" }}
                 titleStyle={{ fontWeight: "bold" }}
@@ -169,7 +180,7 @@ const Dashboard = () => {
             >
               <Statistic
                 title="Total Expenses"
-                value={totalExpenses}
+                value={totalExpensesMonth}
                 prefix={<ArrowDownOutlined style={{ fontSize: "24px" }} />}
                 valueStyle={{ fontSize: "24px" }}
                 titleStyle={{ fontWeight: "bold" }}
@@ -177,7 +188,7 @@ const Dashboard = () => {
             </Card>
           </Col>
         </Row>
-      <Divider orientation="center" style={{ color: "#1890ff" }}>
+        <Divider orientation="center" style={{ color: "#1890ff" }}>
           All Time
         </Divider>
         <Row gutter={[16, 16]} justify="center">
@@ -230,7 +241,7 @@ const Dashboard = () => {
             >
               <Statistic
                 title="Savings"
-                value={totalIncome-totalExpenses}
+                value={totalIncome - totalExpenses}
                 prefix={<WalletOutlined style={{ fontSize: "24px" }} />}
                 valueStyle={{ fontSize: "24px" }}
                 titleStyle={{ fontWeight: "bold" }}
@@ -267,45 +278,45 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col span={12}>
-            <Carousel autoplay arrows autoplaySpeed={3000} >
-              {savingGoals
-                ? savingGoals.map((goal, index) => (
-                  <div key={index}>
-                    <Card 
-                          className="dashboard-card"
-                          
-                        >
-                          <h3>Saving Goal Progress</h3>
-                          <Progress
-                            percent={goal.savingsPercentage}
-                            status={
-                              goal.savingsPercentage >= 100
-                                ? "success"
-                                : "normal"
-                            }
-                            strokeWidth={20}
-                          />
-                          <p>
-                            {goal.isGoalAchieved ? (
-                              "Congratulations! You've achieved your saving goal."
-                            ) : (
-                              <>
-                                You're making progress towards your saving goal.{" "}
-                                <br />
-                                You need to save $
-                                {goal.targetAmount - (goal.totalSavedAmount)} more
-                                to achieve your goal by the deadline. <br />
-                                You have {goal.remainingDays} days left until
-                                the deadline.
-                              </>
-                            )}
-                          </p>
-                        </Card>
-                    </div>
-                  ))
-                : null}
-            </Carousel>
-          </Col>
+      <Carousel
+        autoplay
+              dotPosition="bottom" 
+        autoplaySpeed={3000}
+        style={{ backgroundColor:'white', borderRadius:'10px', paddingLeft: '10px', paddingBottom:'8px' }}
+      >
+        {savingGoals &&
+          savingGoals.map((goal, index) => (
+            <div key={index} style={{ height: '100%' }}>
+              {/* <Card className="dashboard-card"> */}
+                <h3>Saving Goal Progress</h3>
+                <h4>{goal.name}</h4>
+                <Progress
+                  percent={goal.savingsPercentage}
+                  status={goal.savingsPercentage >= 100 ? 'success' : 'normal'}
+                  strokeWidth={20}
+                />
+                <p>
+                  {goal.isGoalAchieved ? (
+                    "Congratulations! You've achieved your saving goal."
+                  ) : (
+                    <>
+                      You're making progress towards your saving goal. <br />
+                      You need to save{' '}
+                      <Statistic
+                        value={goal.targetAmount - goal.totalSavedAmount}
+                        prefix={<DollarOutlined style={{ fontSize: '13px' }} />}
+                        valueStyle={{ fontSize: '13px' }}
+                      />{' '}
+                      more to achieve your goal by the deadline. <br />
+                      You have {goal.remainingDays} days left until the deadline.
+                    </>
+                  )}
+                </p>
+              {/* </Card> */}
+            </div>
+          ))}
+      </Carousel>
+    </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>
           Income History
