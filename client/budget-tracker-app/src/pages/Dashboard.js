@@ -40,9 +40,12 @@ const Dashboard = () => {
 
         if (response.data.error) throw new Error(response.data.error);
         const { numbers } = response.data;
+        console.log();
         setUserName(numbers.name);
-        setTotalIncome(parseFloat(numbers.income_amount));
-        setTotalExpenses(parseFloat(numbers.expense_amount));
+        if (numbers.income_amount || numbers.expense_amount) {
+          setTotalIncome(parseFloat(numbers.income_amount ? numbers.income_amount : 0));
+          setTotalExpenses(parseFloat(numbers.expense_amount ? numbers.expense_amount : 0));
+        }
 
         getSaving();
       } catch (error) {
@@ -104,9 +107,12 @@ const Dashboard = () => {
 
         if (response.data.error) throw new Error(response.data.error);
         const { numbers } = response.data;
+        console.log(numbers)
         setUserName(numbers.name);
-        setTotalIncomeMonth(parseFloat(numbers.income_amount));
-        setTotalExpensesMonth(parseFloat(numbers.expense_amount));
+        if (numbers.income_amount || numbers.expense_amount) {
+          setTotalIncomeMonth(parseFloat(numbers.income_amount ? numbers.income_amount : 0));
+          setTotalExpensesMonth(parseFloat(numbers.expense_amount ? numbers.expense_amount : 0));
+        }
       } catch (error) {
         message.error(error.message);
       }
@@ -278,45 +284,62 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col span={12}>
-      <Carousel
-        autoplay
-              dotPosition="bottom" 
-        autoplaySpeed={3000}
-        style={{ backgroundColor:'white', borderRadius:'10px', paddingLeft: '10px', paddingBottom:'8px' }}
-      >
-        {savingGoals &&
-          savingGoals.map((goal, index) => (
-            <div key={index} style={{ height: '100%' }}>
-              {/* <Card className="dashboard-card"> */}
+            {savingGoals.length > 0 ? (
+              <Carousel
+                autoplay
+                dotPosition="bottom"
+                autoplaySpeed={3000}
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  paddingLeft: "10px",
+                  paddingBottom: "8px",
+                  height: "100%",
+                }}
+              >
+                {savingGoals &&
+                  savingGoals.map((goal, index) => (
+                    <div key={index} style={{ height: "100%" }}>
+                      <h3>Saving Goal Progress</h3>
+                      <h4>{goal.name}</h4>
+                      <Progress
+                        percent={goal.savingsPercentage}
+                        status={
+                          goal.savingsPercentage >= 100 ? "success" : "normal"
+                        }
+                        strokeWidth={20}
+                      />
+                      <p>
+                        {goal.isGoalAchieved ? (
+                          "Congratulations! You've achieved your saving goal."
+                        ) : (
+                          <>
+                            You're making progress towards your saving goal.{" "}
+                            <br />
+                            You need to save{" "}
+                            <Statistic
+                              value={goal.targetAmount - goal.totalSavedAmount}
+                              prefix={
+                                <DollarOutlined style={{ fontSize: "13px" }} />
+                              }
+                              valueStyle={{ fontSize: "13px" }}
+                            />{" "}
+                            more to achieve your goal by the deadline. <br />
+                            You have {goal.remainingDays} days left until the
+                            deadline.
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  ))}
+              </Carousel>
+            ) : (
+              <>
                 <h3>Saving Goal Progress</h3>
-                <h4>{goal.name}</h4>
-                <Progress
-                  percent={goal.savingsPercentage}
-                  status={goal.savingsPercentage >= 100 ? 'success' : 'normal'}
-                  strokeWidth={20}
-                />
-                <p>
-                  {goal.isGoalAchieved ? (
-                    "Congratulations! You've achieved your saving goal."
-                  ) : (
-                    <>
-                      You're making progress towards your saving goal. <br />
-                      You need to save{' '}
-                      <Statistic
-                        value={goal.targetAmount - goal.totalSavedAmount}
-                        prefix={<DollarOutlined style={{ fontSize: '13px' }} />}
-                        valueStyle={{ fontSize: '13px' }}
-                      />{' '}
-                      more to achieve your goal by the deadline. <br />
-                      You have {goal.remainingDays} days left until the deadline.
-                    </>
-                  )}
-                </p>
-              {/* </Card> */}
-            </div>
-          ))}
-      </Carousel>
-    </Col>
+                <p>No Data Available</p>
+              </>
+            )}
+          </Col>
         </Row>
         <Divider orientation="center" style={{ color: "#1890ff" }}>
           Income History

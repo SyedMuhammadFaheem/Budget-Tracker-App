@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Outlet, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { message } from "antd";
 
 function PrivateRoute() {
   const [auth, setAuth] = useState(null);
@@ -42,7 +43,8 @@ function PrivateRoute() {
   } else if (auth) {
     return <Outlet />;
   } else {
-    return <Navigate to="/user/login" />;
+    {message.error("Authentication failed!")}
+    return (<Navigate to="/user/login" />);
   }
 }
 
