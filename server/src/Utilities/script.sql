@@ -28,3 +28,21 @@ VALUES
 ('Vacation',1000.00, '2024-12-31', 1),
 ('Home', 2000.00, '2025-01-01', 2);
 
+
+SELECT 
+    COUNT(incomes.amount) AS income_amount,
+    COUNT(expenses.amount) AS expense_amount
+FROM 
+    users 
+LEFT JOIN 
+    incomes ON incomes."earnedId" = users.id
+LEFT JOIN 
+    expenses ON expenses."spentById" = users.id
+WHERE 
+    users.id = 2;
+	
+	
+select sum(incomes.amount), sum(expenses.amount) from users inner join incomes on users.id=incomes."earnedId" inner join expenses on users.id=expenses."spentById" where users.id=2;
+
+
+

@@ -108,20 +108,6 @@ const EditUserDetails = () => {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  { required: true, message: "Please enter a password!" },
-                ]}
-              >
-                <Input.Password
-                  disabled={!isEditing}
-                  prefix={<EditOutlined />}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item
                 label="Role"
                 name="role"
                 rules={[{ required: true, message: "Please enter a role!" }]}

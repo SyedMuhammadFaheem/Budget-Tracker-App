@@ -63,7 +63,6 @@ function Signup() {
     console.log("Received values of form: ", values);
     if (values.confirmPassword !== values.password) {
       message.error("Password and Confirm Password don't match!");
-      form.resetFields();
       return;
     }
     let { confirmPassword, ...data } = values;

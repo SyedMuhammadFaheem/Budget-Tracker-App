@@ -1,16 +1,23 @@
 const appDataSource = require("../config/db");
-const moment = require('moment')
 
 const createExpense = async (id, name, amount, type, expenseDate) => {
-    try {
-       const spentById=Number(id)
+  try {
+    const spentById = Number(id);
     const expense = appDataSource.getRepository("Expense");
+    const incomeNumbers = await user
+      .createQueryBuilder("user")
+      .innerJoin("user.incomes", "income", "income.earned = user.id")
+      .select(["SUM(income.amount) AS income_amount"])
+      .where("user.id = :id", { id: id })
+      .getRawOne();
+    if (incomeNumbers.income_amount < amount)
+      throw new Error("Expense cannot be addded since there is no income!");
     const expenseObj = {
       name: name,
       amount: amount,
       type: type,
       expenseDate: expenseDate,
-        spentBy: { id: spentById },
+      spentBy: { id: spentById },
     };
     await expense.save(expenseObj);
     const createdExpense = await expense
@@ -69,7 +76,7 @@ const getExpense = async (id) => {
     const expense = await appDataSource
       .getRepository("Expense")
       .findOneBy({ id: id });
-      if (!expense) throw new Error("Expense doesn't exist!");
+    if (!expense) throw new Error("Expense doesn't exist!");
     return expense;
   } catch (error) {
     throw new Error(error.message);
