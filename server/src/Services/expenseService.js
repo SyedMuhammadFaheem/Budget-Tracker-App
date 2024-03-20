@@ -4,14 +4,16 @@ const createExpense = async (id, name, amount, type, expenseDate) => {
   try {
     const spentById = Number(id);
     const expense = appDataSource.getRepository("Expense");
-    const incomeNumbers = await user
+    const incomeNumbers = await appDataSource
+      .getRepository("User")
       .createQueryBuilder("user")
       .innerJoin("user.incomes", "income", "income.earned = user.id")
       .select(["SUM(income.amount) AS income_amount"])
-      .where("user.id = :id", { id: id })
+      .where("user.id = :id", { id })
       .getRawOne();
-    if (incomeNumbers.income_amount < amount)
+    if (incomeNumbers.income_amount < amount) {
       throw new Error("Expense cannot be addded since there is no income!");
+    }
     const expenseObj = {
       name: name,
       amount: amount,

@@ -109,20 +109,6 @@ const EditUserDetails = () => {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  { required: true, message: "Please enter a password!" },
-                ]}
-              >
-                <Input.Password
-                  disabled={!isEditing}
-                  prefix={<EditOutlined />}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item
                 label="Role"
                 name="role"
                 rules={[{ required: true, message: "Please enter a role!" }]}
@@ -130,15 +116,6 @@ const EditUserDetails = () => {
                 <Select disabled={!isEditing}>
                   <Option value="user">User</Option>
                 </Select>
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item
-                label="Balance"
-                name="balance"
-                rules={[{ required: true, message: "Please enter a balance!" }]}
-              >
-                <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24} className="edit-user-details-btn-container">
