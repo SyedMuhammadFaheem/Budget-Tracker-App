@@ -7,20 +7,20 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import "../../styles/EditUserDetails.css";
-import Navbar from "../Navbar";
 import axios from "axios";
+import Navbar from "../Others/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-
 const { Option } = Select;
 
-const EditExpenses = () => {
+function EditIncomes() {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { id, expenseId } = useParams();
+  const { id, incomeId } = useParams();
   const navigate = useNavigate();
+
   const handleEdit = () => {
     setIsEditing(true);
-    form.setFieldsValue(expenseData);
+    form.setFieldsValue(incomeData);
   };
 
   const handleCancel = () => {
@@ -29,15 +29,15 @@ const EditExpenses = () => {
   };
 
   const handleSave = async (values) => {
-    console.log("Updated expense data:", values);
+    console.log("Updated income data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/expense/update-expense/${expenseId}`,
+        `http://localhost:3001/income/update-income/${incomeId}`,
         values
       );
       console.log(response);
       if (response.data.error) throw new Error(response.data.error);
-      message.success("Expense Updated");
+      message.success("Income Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
@@ -46,29 +46,29 @@ const EditExpenses = () => {
     form.resetFields();
   };
 
-  const [expenseData, setExpenseData] = useState(null);
+  const [incomeData, setIncomeData] = useState(null);
   useEffect(() => {
-    const getExpense = async () => {
+    const getIncome = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/expense/get-expense/${expenseId}`
+          `http://localhost:3001/income/get-income/${incomeId}`
         );
         if (response.data.error) throw new Error(response.data.error);
-        const { removeId, ...expenseData } = response.data.expense;
+        const { removeId, ...incomeData } = response.data.income;
 
-        setExpenseData(expenseData);
+        setIncomeData(incomeData);
       } catch (error) {
         message.error(error.message);
       }
     };
-    getExpense();
+    getIncome();
   }, []);
-  if (expenseData === null) return null;
+  if (incomeData === null) return null;
   return (
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Edit Expense
+        Edit Income
       </Divider>
       <div
         className="edit-user-details-container"
@@ -78,7 +78,7 @@ const EditExpenses = () => {
           form={form}
           onFinish={handleSave}
           layout="vertical"
-          initialValues={expenseData}
+          initialValues={incomeData}
         >
           <Row gutter={[16, 16]} justify="center">
             <Col span={24}>
@@ -106,22 +106,18 @@ const EditExpenses = () => {
                 rules={[{ required: true, message: "Please select a type!" }]}
               >
                 <Select disabled={!isEditing}>
-                  <Option value="groceries">Groceries</Option>
-                  <Option value="entertainment">Entertainment</Option>
-                  <Option value="utilities">Utilities</Option>
-                  <Option value="transportation">Transportation</Option>
-                  <Option value="medical">Medical</Option>
-                  <Option value="education">Education</Option>
-                  <Option value="other">Other</Option>
+                  <Option value="regular">Regular</Option>
+                  <Option value="one-time">One-Time</Option>
+                  <Option value="passive">Passive</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Expense Date"
-                name="expenseDate"
+                label="Received Date"
+                name="receivedDate"
                 rules={[
-                  { required: true, message: "Please select an expense date!" },
+                  { required: true, message: "Please select a received date!" },
                 ]}
               >
                 <Input
@@ -147,7 +143,7 @@ const EditExpenses = () => {
                 </div>
               ) : (
                 <Button type="primary" onClick={handleEdit}>
-                  Edit Expense
+                  Edit Income
                 </Button>
               )}
             </Col>
@@ -156,6 +152,6 @@ const EditExpenses = () => {
       </div>
     </>
   );
-};
+}
 
-export default EditExpenses;
+export default EditIncomes;

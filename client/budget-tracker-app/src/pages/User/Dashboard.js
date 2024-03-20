@@ -17,12 +17,12 @@ import {
 } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
-import "../styles/Dashboard.css";
-import "../styles/Carousel.css";
-import IncomeTable from "./Tables/IncomeTable";
-import ExpenseTable from "./Tables/ExpenseTable";
-import SavingTable from "./Tables/SavingTable";
+import Navbar from "../Others/Navbar";
+import "../../styles/Dashboard.css";
+import "../../styles/Carousel.css";
+import IncomeTable from "../Income/IncomeTable";
+import ExpenseTable from "../Expense/ExpenseTable";
+import SavingTable from "../Saving/SavingTable";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
@@ -43,8 +43,12 @@ const Dashboard = () => {
         console.log();
         setUserName(numbers.name);
         if (numbers.income_amount || numbers.expense_amount) {
-          setTotalIncome(parseFloat(numbers.income_amount ? numbers.income_amount : 0));
-          setTotalExpenses(parseFloat(numbers.expense_amount ? numbers.expense_amount : 0));
+          setTotalIncome(
+            parseFloat(numbers.income_amount ? numbers.income_amount : 0)
+          );
+          setTotalExpenses(
+            parseFloat(numbers.expense_amount ? numbers.expense_amount : 0)
+          );
         }
 
         getSaving();
@@ -62,20 +66,22 @@ const Dashboard = () => {
       const goal = {
         name: saving[i].name,
         savingsPercentage: (
-          ((totalIncome - totalExpenses) / parseFloat(saving[i].targetAmount)) *
+          (saving[i].totalIncome && saving[i].totalExpense) && ((saving[i].totalIncome - saving[i].totalExpense) / parseFloat(saving[i].targetAmount)) *
           100
         ).toFixed(0),
         isGoalAchieved:
-          totalIncome - totalExpenses >= saving[i].targetAmount &&
+        (saving[i].totalIncome && saving[i].totalExpense) && saving[i].totalIncome - saving[i].totalExpense >= saving[i].targetAmount &&
           Math.ceil(
             (new Date(saving[i].deadline) - new Date()) / (1000 * 60 * 60 * 24)
           ) >= 0,
         targetAmount: parseFloat(saving[i].targetAmount),
         totalSavedAmount:
-          totalIncome - totalExpenses >= 0 ? totalIncome - totalExpenses : 0,
+        (saving[i].totalIncome && saving[i].totalExpense) && saving[i].totalIncome - saving[i].totalExpense >= 0 ? saving[i].totalIncome - saving[i].totalExpense : 0,
         remainingDays: Math.ceil(
           (new Date(saving[i].deadline) - new Date()) / (1000 * 60 * 60 * 24)
-        ),
+        )>=0 ?  Math.ceil(
+          (new Date(saving[i].deadline) - new Date()) / (1000 * 60 * 60 * 24)
+        ) : 0,
       };
       temp.push(goal);
     }
@@ -107,11 +113,15 @@ const Dashboard = () => {
 
         if (response.data.error) throw new Error(response.data.error);
         const { numbers } = response.data;
-        console.log(numbers)
+        console.log(numbers);
         setUserName(numbers.name);
         if (numbers.income_amount || numbers.expense_amount) {
-          setTotalIncomeMonth(parseFloat(numbers.income_amount ? numbers.income_amount : 0));
-          setTotalExpensesMonth(parseFloat(numbers.expense_amount ? numbers.expense_amount : 0));
+          setTotalIncomeMonth(
+            parseFloat(numbers.income_amount ? numbers.income_amount : 0)
+          );
+          setTotalExpensesMonth(
+            parseFloat(numbers.expense_amount ? numbers.expense_amount : 0)
+          );
         }
       } catch (error) {
         message.error(error.message);
@@ -188,6 +198,20 @@ const Dashboard = () => {
                 title="Total Expenses"
                 value={totalExpensesMonth}
                 prefix={<ArrowDownOutlined style={{ fontSize: "24px" }} />}
+                valueStyle={{ fontSize: "24px" }}
+                titleStyle={{ fontWeight: "bold" }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6} xl={6}>
+            <Card
+              className="dashboard-card"
+              style={{ background: "#faad14", color: "#ffffff" }}
+            >
+              <Statistic
+                title="Total Savings"
+                value={totalIncomeMonth - totalExpensesMonth}
+                prefix={<WalletOutlined style={{ fontSize: "24px" }} />}
                 valueStyle={{ fontSize: "24px" }}
                 titleStyle={{ fontWeight: "bold" }}
               />

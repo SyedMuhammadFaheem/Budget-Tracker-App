@@ -2,17 +2,17 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Register/Login";
 import Signup from "./pages/Register/Signup";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/User/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
-import EditUserDetails from "./pages/EditForms/EditUserDetails";
-import EditExpenses from "./pages/EditForms/EditExpenses";
-import AddExpenses from "./pages/AddForms/AddExpenses";
-import AddIncome from "./pages/AddForms/AddIncome";
-import EditSavings from "./pages/EditForms/EditSavings";
-import AddSaving from "./pages/AddForms/AddSaving";
-import EditIncomes from "./pages/EditForms/EditIncomes";
-import NotFound from "./pages/NotFound";
-import LandingPage from "./pages/LandingPage";
+import EditUserDetails from "./pages/User/EditUserDetails";
+import EditExpenses from "./pages/Expense/EditExpenses";
+import AddExpenses from "./pages/Expense/AddExpenses";
+import AddIncome from "./pages/Income/AddIncome";
+import EditSavings from "./pages/Saving/EditSavings";
+import AddSaving from "./pages/Saving/AddSaving";
+import EditIncomes from "./pages/Income/EditIncomes";
+import NotFound from "./pages/Others/NotFound";
+import LandingPage from "./pages/Others/LandingPage";
 
 function Router() {
   return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Button, Row, Col, Card } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import cover from '../images/cover-photo.jpg'
+import cover from '../../images/cover-photo.jpg'
 
 const { Title, Paragraph } = Typography;
 

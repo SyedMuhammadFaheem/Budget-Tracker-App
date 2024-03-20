@@ -151,7 +151,7 @@ const getExpense = async (id) => {
   try {
     id = Number(id);
     const user = appDataSource.getRepository("User");
-    const income = await user
+    const expense = await user
       .createQueryBuilder("user")
       .innerJoin("user.expenses", "expense", "expense.spentBy = user.id")
       .select([
@@ -160,7 +160,7 @@ const getExpense = async (id) => {
       .where("user.id = :id", { id: id })
       .getRawMany();
 
-    return income;
+    return expense;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -171,14 +171,37 @@ const getSaving = async (id) => {
     id = Number(id);
     console.log('hello')
     const user = appDataSource.getRepository("User");
-    const income = await user
+
+    const saving = await user
       .createQueryBuilder("user")
       .innerJoin("user.savings", "saving", "saving.savedBy = user.id")
       .select(["saving.id, saving.name, saving.targetAmount, saving.deadline "])
       .where("user.id = :id", { id: id })
       .getRawMany();
+    let finalSaving=[]
+    for (let i = 0; i < saving.length; i++)
+    {
+      const fromDate = new Date()
+      const toDate = new Date(saving[i].deadline)
+      const totalIncomeInRange = await appDataSource.getRepository("Income")
+      .createQueryBuilder('income')
+      .select('SUM(income.amount)', 'totalIncome')
+      .where('income.receivedDate BETWEEN :fromDate AND :toDate', { fromDate, toDate })
+        .getRawOne();
+        const totalExpenseInRange = await appDataSource.getRepository("Expense")
+        .createQueryBuilder('expense')
+        .select('SUM(expense.amount)', 'totalExpense')
+        .where('expense.expenseDate BETWEEN :fromDate AND :toDate', { fromDate, toDate })
+        .getRawOne();
+      const obj = {
+        ...saving[i],
+        ...totalIncomeInRange,
+        ...totalExpenseInRange
+      }
+      finalSaving.push(obj)
+    }
 
-    return income;
+    return finalSaving;;
   } catch (error) {
     throw new Error(error.message);
   }

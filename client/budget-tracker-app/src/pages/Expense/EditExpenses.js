@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Divider, message } from "antd";
+import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
 import {
   NumberOutlined,
   EditOutlined,
@@ -7,19 +7,20 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import "../../styles/EditUserDetails.css";
+import Navbar from "../Others/Navbar";
 import axios from "axios";
-import Navbar from "../Navbar";
 import { useNavigate, useParams } from "react-router-dom";
 
-function EditSavings() {
+const { Option } = Select;
+
+const EditExpenses = () => {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { id, savingId } = useParams();
+  const { id, expenseId } = useParams();
   const navigate = useNavigate();
-
   const handleEdit = () => {
     setIsEditing(true);
-    form.setFieldsValue(savingData);
+    form.setFieldsValue(expenseData);
   };
 
   const handleCancel = () => {
@@ -28,15 +29,15 @@ function EditSavings() {
   };
 
   const handleSave = async (values) => {
-    console.log("Updated saving data:", values);
+    console.log("Updated expense data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/saving/update-saving/${savingId}`,
+        `http://localhost:3001/expense/update-expense/${expenseId}`,
         values
       );
       console.log(response);
       if (response.data.error) throw new Error(response.data.error);
-      message.success("Saving Updated");
+      message.success("Expense Updated");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
@@ -45,30 +46,28 @@ function EditSavings() {
     form.resetFields();
   };
 
-  const [savingData, setSavingData] = useState(null);
+  const [expenseData, setExpenseData] = useState(null);
   useEffect(() => {
-    const getSaving = async () => {
+    const getExpense = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/saving/get-saving/${savingId}`
+          `http://localhost:3001/expense/get-expense/${expenseId}`
         );
         if (response.data.error) throw new Error(response.data.error);
-        const { removeId, ...savingData } = response.data.saving;
-
-        setSavingData(savingData);
+        const { removeId, ...expenseData } = response.data.expense;
+        setExpenseData(expenseData);
       } catch (error) {
         message.error(error.message);
       }
     };
-    getSaving();
+    getExpense();
   }, []);
-
-  if (savingData === null) return null;
+  if (expenseData === null) return null;
   return (
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Edit Saving
+        Edit Expense
       </Divider>
       <div
         className="edit-user-details-container"
@@ -78,7 +77,7 @@ function EditSavings() {
           form={form}
           onFinish={handleSave}
           layout="vertical"
-          initialValues={savingData}
+          initialValues={expenseData}
         >
           <Row gutter={[16, 16]} justify="center">
             <Col span={24}>
@@ -92,20 +91,37 @@ function EditSavings() {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Target Amount"
-                name="targetAmount"
-                rules={[
-                  { required: true, message: "Please enter a target amount!" },
-                ]}
+                label="Amount"
+                name="amount"
+                rules={[{ required: true, message: "Please enter an amount!" }]}
               >
                 <Input disabled={!isEditing} prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Deadline"
-                name="deadline"
-                rules={[{ required: true, message: "Please select deadline!" }]}
+                label="Type"
+                name="type"
+                rules={[{ required: true, message: "Please select a type!" }]}
+              >
+                <Select disabled={!isEditing}>
+                  <Option value="groceries">Groceries</Option>
+                  <Option value="entertainment">Entertainment</Option>
+                  <Option value="utilities">Utilities</Option>
+                  <Option value="transportation">Transportation</Option>
+                  <Option value="medical">Medical</Option>
+                  <Option value="education">Education</Option>
+                  <Option value="other">Other</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Expense Date"
+                name="expenseDate"
+                rules={[
+                  { required: true, message: "Please select an expense date!" },
+                ]}
               >
                 <Input
                   type="date"
@@ -130,7 +146,7 @@ function EditSavings() {
                 </div>
               ) : (
                 <Button type="primary" onClick={handleEdit}>
-                  Edit Saving
+                  Edit Expense
                 </Button>
               )}
             </Col>
@@ -139,6 +155,6 @@ function EditSavings() {
       </div>
     </>
   );
-}
+};
 
-export default EditSavings;
+export default EditExpenses;

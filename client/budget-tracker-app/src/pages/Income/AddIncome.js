@@ -1,25 +1,29 @@
 import React from "react";
-import { Form, Input, Button, Row, Col, Divider, message } from "antd";
+import { Form, Input, Button, Row, Col, Select, Divider, message } from "antd";
 import { NumberOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
 import axios from "axios";
-import Navbar from "../Navbar";
+import Navbar from "../Others/Navbar";
 import "../../styles/EditUserDetails.css";
 import { useNavigate, useParams } from "react-router-dom";
 
-function AddSaving() {
+const { Option } = Select;
+
+const AddIncome = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
+
   const handleSave = async (values) => {
-    console.log("Saved saving data:", values);
+    console.log("Saved income data:", values);
+    console.log(id);
     try {
       const response = await axios.post(
-        `http://localhost:3001/saving/create-saving/${id}`,
+        `http://localhost:3001/income/create-income/${id}`,
         values
       );
       console.log(response.data);
       if (response.data.error) throw new Error(response.data.error);
-      message.success("Saving created successfully");
+      message.success("Income created successfully");
       navigate(`/user/dashboard/${id}`);
     } catch (error) {
       message.error(error.message);
@@ -31,7 +35,7 @@ function AddSaving() {
     <>
       <Navbar selectedValue="1" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
-        Add Saving
+        Add Income
       </Divider>
       <div
         className="edit-user-details-container"
@@ -50,22 +54,32 @@ function AddSaving() {
             </Col>
             <Col span={24}>
               <Form.Item
-                label="Target Amount"
-                name="targetAmount"
-                rules={[
-                  { required: true, message: "Please enter a target amount!" },
-                ]}
+                label="Amount"
+                name="amount"
+                rules={[{ required: true, message: "Please enter an amount!" }]}
               >
                 <Input prefix={<NumberOutlined />} />
               </Form.Item>
             </Col>
-
             <Col span={24}>
               <Form.Item
-                label="Deadline"
-                name="deadline"
+                label="Type"
+                name="type"
+                rules={[{ required: true, message: "Please select a type!" }]}
+              >
+                <Select>
+                  <Option value="regular">Regular</Option>
+                  <Option value="one-time">One-Time</Option>
+                  <Option value="passive">Passive</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Received Date"
+                name="receivedDate"
                 rules={[
-                  { required: true, message: "Please select a deadline!" },
+                  { required: true, message: "Please select a received date!" },
                 ]}
               >
                 <Input type="date" prefix={<EditOutlined />} />
@@ -82,6 +96,6 @@ function AddSaving() {
       </div>
     </>
   );
-}
+};
 
-export default AddSaving;
+export default AddIncome;

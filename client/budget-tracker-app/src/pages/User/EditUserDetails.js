@@ -8,13 +8,13 @@ import {
 } from "@ant-design/icons";
 import "../../styles/EditUserDetails.css";
 import axios from "axios";
-import Navbar from "../Navbar";
+import Navbar from "../Others/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
 
 const { Option } = Select;
 
 const EditUserDetails = () => {
-  const navigate = useNavigate();
+    const navigate= useNavigate()
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const { id } = useParams();
@@ -33,14 +33,14 @@ const EditUserDetails = () => {
     console.log("Updated user data:", values);
     try {
       const response = await axios.put(
-        `http://localhost:3001/user/update-user-details/${id}`,
-        values
-      );
-      console.log(response);
-      if (response.data.error) throw new Error(response.data.error);
+        `http://localhost:3001/user/update-user-details/${id}`, values
+        );
+      console.log(response)
+      if (response.data.error)
+        throw new Error(response.data.error)
 
-      message.success("User Updated");
-      navigate(`/user/dashboard/${id}`);
+        message.success('User Updated')
+        navigate(`/user/dashboard/${id}`)
     } catch (error) {
       message.error(error.message);
     }
@@ -53,21 +53,22 @@ const EditUserDetails = () => {
         const response = await axios.get(
           `http://localhost:3001/user/get-user-details/${id}`
         );
-        if (response.data.error) throw new Error(response.data.error);
+        if (response.data.error)
+        throw new Error(response.data.error)
         const { removeId, ...userData } = response.data.user;
 
         setUserData(userData);
       } catch (error) {
-        message.error(error.message);
+          message.error(error.message);
       }
     };
     getUserDetails();
-  }, []);
+  },[]);
 
   if (userData === null) return null;
   return (
     <>
-      <Navbar name={ userData.name} selectedValue="2" />
+      <Navbar selectedValue="2" />
       <Divider orientation="center" style={{ color: "#1890ff" }}>
         Edit Profile
       </Divider>
@@ -104,6 +105,20 @@ const EditUserDetails = () => {
                 ]}
               >
                 <Input disabled={!isEditing} prefix={<EditOutlined />} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[
+                  { required: true, message: "Please enter a password!" },
+                ]}
+              >
+                <Input.Password
+                  disabled={!isEditing}
+                  prefix={<EditOutlined />}
+                />
               </Form.Item>
             </Col>
             <Col span={24}>

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Layout, Menu, Avatar } from "antd";
 import { HomeOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import avatar from "../images/avatar.jpg";
+import avatar from "../../images/avatar.jpg";
 import Cookies from "js-cookie";
 const { Header } = Layout;
 
