@@ -65,10 +65,10 @@ const Dashboard = () => {
     for (let i = 0; i < saving.length; i++) {
       const goal = {
         name: saving[i].name,
-        savingsPercentage: (
-          (saving[i].totalIncome && saving[i].totalExpense) && ((saving[i].totalIncome - saving[i].totalExpense) / parseFloat(saving[i].targetAmount)) *
+        savingsPercentage: 
+          (saving[i].totalIncome && saving[i].totalExpense) ? (((saving[i].totalIncome - saving[i].totalExpense) / parseFloat(saving[i].targetAmount)) *
           100
-        ).toFixed(0),
+        ).toFixed(0) : 0,
         isGoalAchieved:
         (saving[i].totalIncome && saving[i].totalExpense) && saving[i].totalIncome - saving[i].totalExpense >= saving[i].targetAmount &&
           Math.ceil(
